@@ -13,7 +13,11 @@ ROOT = Path(__file__).resolve().parents[4]
 ANALYSIS = ROOT / "analyses/phase3/m0_m3_model_comparison"
 RESULTS = ANALYSIS / "results"
 FIGURES = ANALYSIS / "figures"
-MODELS = {"M2": ("#777777", "M2"), "M4": ("#2A6FBB", "M4 pressure fit")}
+MODELS = {
+    "M2": ("#777777", "M2 fixed"),
+    "M4A": ("#2A6FBB", "M4A Hilliard-only"),
+    "M4B": ("#D1495B", "M4B Hilliard + Jou"),
+}
 FRACTIONS = (0.17, 0.30, 0.40)
 plt.rcParams["svg.hashsalt"] = "mea-m4-pressure-sensitivity"
 
@@ -64,7 +68,11 @@ def _fit_by_composition() -> None:
         ]
         for source in sorted({row["source_key"] for row in observed}):
             source_rows = [row for row in observed if row["source_key"] == source]
-            validation = source_rows[0]["split"] == "validation"
+            canonical_role = (
+                "canonical reserved"
+                if source_rows[0]["split"] == "validation"
+                else "canonical training"
+            )
             axis.scatter(
                 [float(row["loading_mol_co2_per_mol_mea"]) for row in source_rows],
                 [float(row["observed_pco2_pa"]) / 1000.0 for row in source_rows],
@@ -74,7 +82,7 @@ def _fit_by_composition() -> None:
                 color="#222222" if source == "Jou1995" else None,
                 linewidths=1.0,
                 s=28,
-                label=f"{source.replace('2008', '').replace('1995', '')} ({'validation' if validation else 'training'})",
+                label=f"{source.replace('2008', '').replace('1995', '')} ({canonical_role})",
                 zorder=3,
             )
         for model_id, (color, label) in MODELS.items():
@@ -99,9 +107,9 @@ def _fit_by_composition() -> None:
                     label=label if source == sorted({row["source_key"] for row in model_rows})[0] else None,
                 )
         role = (
-            "training + Jou validation"
+            "M4A holdout / M4B joint fit"
             if np.isclose(fraction, 0.30)
-            else "validation"
+            else "untouched concentration validation"
         )
         axis.set_title(f"{100 * fraction:.0f} wt% MEA\n{role}")
         axis.set_xlabel(r"loading (mol $CO_2$/mol MEA)")
@@ -121,12 +129,12 @@ def _fit_by_composition() -> None:
         unique.keys(),
         loc="upper center",
         bbox_to_anchor=(0.5, 0.89),
-        ncol=5,
+        ncol=3,
         frameon=False,
         fontsize=8.5,
     )
-    fig.suptitle("313.15 K pressure fit and untouched concentration/source checks", y=0.98)
-    fig.subplots_adjust(top=0.68, wspace=0.12)
+    fig.suptitle("313.15 K source-holdout and joint-source pressure fits", y=0.98)
+    fig.subplots_adjust(top=0.62, wspace=0.12)
     _save(fig, "m4_pressure_fit_by_composition")
 
 
@@ -222,7 +230,7 @@ def _sensitivity() -> None:
 
 def _residuals() -> None:
     rows = _rows(RESULTS / "pressure_fit_predictions.csv")
-    fig, axes = plt.subplots(1, 2, figsize=(8.8, 3.55), sharex=True, sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(11.2, 3.55), sharex=True, sharey=True)
     markers = {0.17: "s", 0.30: "o", 0.40: "^"}
     for axis, model_id in zip(axes, MODELS, strict=True):
         selected = [row for row in rows if row["model_id"] == model_id]
@@ -243,7 +251,11 @@ def _residuals() -> None:
                     facecolors="none",
                     edgecolors=color,
                     s=30,
-                    label=f"{100 * fraction:.0f} wt%, {split}",
+                    label=(
+                        f"{100 * fraction:.0f} wt%, canonical training"
+                        if split == "training"
+                        else f"{100 * fraction:.0f} wt%, canonical reserved"
+                    ),
                 )
         axis.axhline(0.0, color="#333333", linewidth=0.8)
         axis.set_title(MODELS[model_id][1])
@@ -251,9 +263,9 @@ def _residuals() -> None:
         axis.grid(alpha=0.2)
         axis.spines[["top", "right"]].set_visible(False)
     axes[0].set_ylabel(r"$\log_{10}(p_{model}/p_{obs})$")
-    handles, labels = axes[1].get_legend_handles_labels()
+    handles, labels = axes[-1].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", bbox_to_anchor=(0.5, 1.08), ncol=3, frameon=False)
-    fig.suptitle("Residual shape before and after the pressure-only fit", y=1.18)
+    fig.suptitle("Residual shape for fixed, source-holdout, and joint-source models", y=1.18)
     fig.subplots_adjust(wspace=0.12)
     _save(fig, "m4_pressure_fit_residuals")
 

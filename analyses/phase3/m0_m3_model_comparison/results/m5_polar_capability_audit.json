@@ -1,0 +1,68 @@
+{
+  "analysis_role": "readiness audit for a nested polar-model comparison",
+  "claim_boundary": "No M5 state was evaluated. The record establishes current EOS and parameter-evidence limits only.",
+  "eos": {
+    "commit": "20e5d2868f78cda5e2367457f032ae71ba42112c",
+    "tree": "d082a8f102b32705b6cd6669a3e31a8d4ea8acd0",
+    "committed_ares_polar_available": false,
+    "current_dipole_input_role": "mixture permittivity and Born calculation, not a residual DD/DQ/QQ attraction",
+    "documentation": [
+      "docs/python-api.md:137",
+      "docs/adr/0003-explicit-parameter-inputs.md:35"
+    ],
+    "implementation_path": [
+      "https://github.com/ePC-SAFT/ePC-SAFT-eos/issues/52",
+      "https://github.com/ePC-SAFT/ePC-SAFT-eos/issues/53",
+      "https://github.com/ePC-SAFT/ePC-SAFT-eos/issues/54"
+    ]
+  },
+  "literature_evidence": {
+    "co2_qq_candidate": {
+      "source": "Gross (2005), doi:10.1002/aic.10502, Table A1 first CO2 row",
+      "zotero_storage_key": "LYM2V8BA",
+      "source_sha256": "cfd73fa388bec051b91e4f51e1c2e16ddf2f2140b6c037996ab33290887c5d50",
+      "parameters": {
+        "segment_number": 1.5131,
+        "segment_diameter_angstrom": 3.1869,
+        "dispersion_energy_over_k_K": 163.33,
+        "quadrupole_moment_D_angstrom": 4.4
+      },
+      "status": "primary-source candidate fitted with QQ active"
+    },
+    "dd_equation": {
+      "source": "Gross and Vrabec (2006), doi:10.1002/aic.10683",
+      "zotero_storage_key": "DWISZT5F",
+      "source_sha256": "0f342632efca9425db2a2cc26bac652605ae8c787900f3864d060c59d8e2a2e3"
+    },
+    "dq_equation": {
+      "source": "Vrabec and Gross (2008), doi:10.1021/jp072619u",
+      "zotero_storage_key": "328F3YIN",
+      "source_sha256": "c58ae9e065580bf9cd80a26f3e8b8eb875b95ef11cb5004e60c42586b507d9a7"
+    },
+    "component_parameter_coverage": {
+      "CO2_QQ": "candidate available",
+      "H2O_DD_with_association": "coherent refit not found in audited sources",
+      "MEA_DD_with_association": "coherent refit not found in audited sources",
+      "CO2_H2O_and_CO2_MEA_DQ": "requires executable DQ plus qualified DD/QQ component sets"
+    }
+  },
+  "recommended_stages": [
+    {
+      "model": "M5a",
+      "definition": "CO2 QQ diagnostic using the Gross (2005) measured-moment parameter set",
+      "blocked_by": "EOS issue 52",
+      "claim_limit": "diagnostic bracket; water and MEA are not yet refitted with DD"
+    },
+    {
+      "model": "M5b",
+      "definition": "DD active with neutral H2O and MEA parameters refitted or independently qualified",
+      "blocked_by": "EOS issue 53 and missing coherent H2O/MEA polar parameter sets"
+    },
+    {
+      "model": "M5c",
+      "definition": "complete neutral DD + QQ + DQ comparison",
+      "blocked_by": "EOS issue 54 and completion of M5b"
+    }
+  ],
+  "status": "M5_NOT_CURRENTLY_EXECUTABLE"
+}

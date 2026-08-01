@@ -1,5 +1,5 @@
 id: m0_m3_model_comparison
-title: M0--M4 reactive ePC-SAFT comparison
+title: M0--M4B reactive ePC-SAFT comparison and M5 capability audit
 status: nonpromoting_experiment
 manuscript_integration: excluded
 inputs:
@@ -23,10 +23,11 @@ outputs:
   - results/pressure_fit_parameters.csv
   - results/pressure_fit_predictions.csv
   - results/pressure_fit_metrics.csv
+  - results/m5_polar_capability_audit.json
   - figures/m0_m3_pco2_loading_comparison.svg
   - figures/m0_m3_species_by_loading.svg
   - figures/m0_m3_density_context.svg
   - figures/m4_pressure_fit_by_composition.svg
   - figures/m4_pressure_parameter_sensitivity.svg
   - figures/m4_pressure_fit_residuals.svg
-claim_boundary: The results are diagnostic model comparisons. M3 is a two-row fit and M4 is a single-temperature pressure fit; neither permits parameter promotion or a predictive claim.
+claim_boundary: The results are diagnostic model comparisons. M3 is a two-row fit, M4A is a single-source pressure fit, M4B is a joint-source pressure fit, and M5 is not executable; none permits parameter promotion or a predictive claim.

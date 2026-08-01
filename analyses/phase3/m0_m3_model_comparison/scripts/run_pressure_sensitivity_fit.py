@@ -396,8 +396,16 @@ class Experiment:
         return [self.cache[(key, str(row["observation_id"]))] for row in rows]
 
 
-def _residuals(results: list[dict[str, object]]) -> np.ndarray:
-    return np.asarray([float(row["log10_residual"]) for row in results])
+def _residuals(
+    results: list[dict[str, object]],
+    multipliers: dict[str, float] | None = None,
+) -> np.ndarray:
+    residual = np.asarray([float(row["log10_residual"]) for row in results])
+    if multipliers is None:
+        return residual
+    return residual * np.asarray(
+        [multipliers[str(row["observation_id"])] for row in results]
+    )
 
 
 def _screen(
@@ -483,8 +491,9 @@ def _jacobian(
     selected: list[str],
     values: dict[str, float],
     rows: list[dict[str, object]],
+    residual_multipliers: dict[str, float] | None,
 ) -> tuple[np.ndarray, np.ndarray]:
-    base = _residuals(experiment.evaluate(values, rows))
+    base = _residuals(experiment.evaluate(values, rows), residual_multipliers)
     columns = []
     for identity in selected:
         candidate = candidates[identity]
@@ -497,7 +506,13 @@ def _jacobian(
         perturbed[identity] += step
         changed_affine = step / candidate.affine_scale
         columns.append(
-            (_residuals(experiment.evaluate(perturbed, rows)) - base) / changed_affine
+            (
+                _residuals(
+                    experiment.evaluate(perturbed, rows), residual_multipliers
+                )
+                - base
+            )
+            / changed_affine
         )
     return base, np.column_stack(columns)
 
@@ -507,13 +522,22 @@ def _fit(
     candidates: tuple[Candidate, ...],
     selected: list[str],
     starts: dict[str, float],
-    training: list[dict[str, object]],
+    objective_rows: list[dict[str, object]],
+    residual_multipliers: dict[str, float] | None,
+    weight_description: str,
 ) -> tuple[dict[str, float], dict[str, Any]]:
     lookup = {candidate.identity: candidate for candidate in candidates}
     values = dict(starts)
     iterations: list[dict[str, object]] = []
     for iteration in range(FIT_MAX_ITERATIONS):
-        residual, jacobian = _jacobian(experiment, lookup, selected, values, training)
+        residual, jacobian = _jacobian(
+            experiment,
+            lookup,
+            selected,
+            values,
+            objective_rows,
+            residual_multipliers,
+        )
         lower = []
         upper = []
         for identity in selected:
@@ -548,7 +572,9 @@ def _fit(
             for identity, delta in zip(selected, step, strict=True):
                 scale = float(lookup[identity].affine_scale)
                 trial[identity] += factor * float(delta) * scale
-            trial_residual = _residuals(experiment.evaluate(trial, training))
+            trial_residual = _residuals(
+                experiment.evaluate(trial, objective_rows), residual_multipliers
+            )
             trial_rmse = float(np.sqrt(np.mean(trial_residual**2)))
             if trial_rmse < candidate_rmse:
                 accepted = True
@@ -573,7 +599,12 @@ def _fit(
             break
 
     final_residual, final_jacobian = _jacobian(
-        experiment, lookup, selected, values, training
+        experiment,
+        lookup,
+        selected,
+        values,
+        objective_rows,
+        residual_multipliers,
     )
     singular = np.linalg.svd(final_jacobian, compute_uv=False)
     condition = float(singular[0] / singular[-1])
@@ -589,7 +620,10 @@ def _fit(
     diagnostics = {
         "method": "two-step bounded Gauss-Newton with forward finite differences and backtracking",
         "residual": "log10(predicted_pCO2_pa / observed_pCO2_pa)",
-        "weights": "equal row weights; source-reported numeric covariance is unavailable",
+        "weights": weight_description,
+        "objective_observation_ids": [
+            str(row["observation_id"]) for row in objective_rows
+        ],
         "regularization": "none",
         "selected_parameters": selected,
         "iterations": iterations,
@@ -614,12 +648,12 @@ def _metrics(
     predictions: list[dict[str, object]],
     model_id: str,
     selection: str,
+    predicate: Any,
 ) -> dict[str, object]:
     chosen = [
         row
         for row in predictions
-        if row["model_id"] == model_id
-        and (selection == "all" or row["split"] == selection)
+        if row["model_id"] == model_id and predicate(row)
     ]
     residual = np.asarray([float(row["log10_residual"]) for row in chosen])
     ratio = np.asarray(
@@ -640,6 +674,23 @@ def main() -> None:
     RESULTS.mkdir(parents=True, exist_ok=True)
     inventory, executable = _temperature_inventory()
     training = [row for row in executable if row["split"] == "training"]
+    joint_30wt = [
+        row
+        for row in executable
+        if math.isclose(float(row["mea_mass_fraction"]), 0.30)
+    ]
+    if len(joint_30wt) != 32:
+        raise ValueError(f"joint 30 wt% objective drift: {len(joint_30wt)}")
+    source_counts = {
+        source: sum(row["source_key"] == source for row in joint_30wt)
+        for source in {str(row["source_key"]) for row in joint_30wt}
+    }
+    joint_multipliers = {
+        str(row["observation_id"]): math.sqrt(
+            len(joint_30wt) / (len(source_counts) * source_counts[str(row["source_key"])])
+        )
+        for row in joint_30wt
+    }
     candidates = _candidates()
     starts = {candidate.identity: candidate.start for candidate in candidates}
     with tempfile.TemporaryDirectory(prefix="mea-pressure-fit-") as temporary:
@@ -647,15 +698,33 @@ def main() -> None:
         sensitivity, sensitivity_by_row, selected, screen = _screen(
             experiment, candidates, starts, training
         )
-        fitted, fit = _fit(experiment, candidates, selected, starts, training)
+        m4a, fit_m4a = _fit(
+            experiment,
+            candidates,
+            selected,
+            starts,
+            training,
+            None,
+            "equal row weights over the 24 Hilliard 30 wt% rows; source-reported numeric covariance is unavailable",
+        )
+        m4b, fit_m4b = _fit(
+            experiment,
+            candidates,
+            selected,
+            m4a,
+            joint_30wt,
+            joint_multipliers,
+            "equal total squared weight for Hilliard and Jou at 30 wt%; per-row multipliers sqrt(2/3) and sqrt(2), respectively",
+        )
         predictions: list[dict[str, object]] = []
-        for model_id, values in (("M2", starts), ("M4", fitted)):
+        model_values = (("M2", starts), ("M4A", m4a), ("M4B", m4b))
+        for model_id, values in model_values:
             for row in experiment.evaluate(values, executable):
                 predictions.append({"model_id": model_id, **row})
         state_evaluations = experiment.state_evaluations
         fingerprints = {
             model_id: experiment.fingerprints[experiment._key(values)]
-            for model_id, values in (("M2", starts), ("M4", fitted))
+            for model_id, values in model_values
         }
 
     fit_parameters = []
@@ -668,8 +737,11 @@ def main() -> None:
                 "selected_for_fit": str(candidate.identity in selected).lower(),
                 "unit": candidate.unit,
                 "start": candidate.start,
-                "fitted_value": fitted[candidate.identity],
-                "change": fitted[candidate.identity] - candidate.start,
+                "m4a_fitted_value": m4a[candidate.identity],
+                "m4a_change_from_m2": m4a[candidate.identity] - candidate.start,
+                "m4b_fitted_value": m4b[candidate.identity],
+                "m4b_change_from_m2": m4b[candidate.identity] - candidate.start,
+                "m4b_change_from_m4a": m4b[candidate.identity] - m4a[candidate.identity],
                 "lower_bound": "" if candidate.lower is None else candidate.lower,
                 "upper_bound": "" if candidate.upper is None else candidate.upper,
                 "affine_scale": "" if candidate.affine_scale is None else candidate.affine_scale,
@@ -701,35 +773,42 @@ def main() -> None:
                 "parameter_fingerprint": row["parameter_fingerprint"],
             }
         )
+    selections = (
+        ("canonical:training", lambda row: row["split"] == "training"),
+        ("canonical:reserved", lambda row: row["split"] == "validation"),
+        ("objective:M4B:joint-30wt", lambda row: math.isclose(float(row["mea_mass_fraction"]), 0.30)),
+        (
+            "validation:concentration-17-and-40wt",
+            lambda row: not math.isclose(float(row["mea_mass_fraction"]), 0.30),
+        ),
+        ("group:Hilliard2008:w=0.17", lambda row: row["source_key"] == "Hilliard2008" and math.isclose(float(row["mea_mass_fraction"]), 0.17)),
+        ("group:Hilliard2008:w=0.30", lambda row: row["source_key"] == "Hilliard2008" and math.isclose(float(row["mea_mass_fraction"]), 0.30)),
+        ("group:Hilliard2008:w=0.40", lambda row: row["source_key"] == "Hilliard2008" and math.isclose(float(row["mea_mass_fraction"]), 0.40)),
+        ("group:Jou1995:w=0.30", lambda row: row["source_key"] == "Jou1995" and math.isclose(float(row["mea_mass_fraction"]), 0.30)),
+        ("all", lambda row: True),
+    )
     metrics = [
-        _metrics(predictions, model_id, split)
-        for model_id in ("M2", "M4")
-        for split in ("training", "validation", "all")
+        _metrics(predictions, model_id, selection, predicate)
+        for model_id in ("M2", "M4A", "M4B")
+        for selection, predicate in selections
     ]
-    for model_id in ("M2", "M4"):
-        for source, fraction in (("Hilliard2008", 0.17), ("Hilliard2008", 0.40), ("Jou1995", 0.30)):
-            group = [
-                row
-                for row in predictions
-                if row["model_id"] == model_id
-                and row["source_key"] == source
-                and math.isclose(float(row["mea_mass_fraction"]), fraction)
-            ]
-            residual = np.asarray([float(row["log10_residual"]) for row in group])
-            ratio = np.asarray(
-                [float(row["predicted_pco2_pa"]) / float(row["observed_pco2_pa"]) for row in group]
+    source_balanced_objective = {}
+    for model_id in ("M2", "M4A", "M4B"):
+        source_mean_squares = []
+        for source in source_counts:
+            residual = np.asarray(
+                [
+                    float(row["log10_residual"])
+                    for row in predictions
+                    if row["model_id"] == model_id
+                    and row["source_key"] == source
+                    and math.isclose(float(row["mea_mass_fraction"]), 0.30)
+                ]
             )
-            metrics.append(
-                {
-                    "model_id": model_id,
-                    "selection": f"validation:{source}:w={fraction:g}",
-                    "row_count": len(group),
-                    "log10_rmse": float(np.sqrt(np.mean(residual**2))),
-                    "log10_bias": float(np.mean(residual)),
-                    "aard_percent": float(100.0 * np.mean(np.abs(ratio - 1.0))),
-                    "max_abs_log10_residual": float(np.max(np.abs(residual))),
-                }
-            )
+            source_mean_squares.append(float(np.mean(residual**2)))
+        source_balanced_objective[model_id] = float(
+            np.sqrt(np.mean(source_mean_squares))
+        )
 
     output_tables = {
         "pressure_row_inventory.csv": inventory,
@@ -743,7 +822,7 @@ def main() -> None:
     for name, rows in output_tables.items():
         _write_csv(RESULTS / name, rows)
     receipt = {
-        "analysis": "313.15 K pressure sensitivity and M4 exploratory fit",
+        "analysis": "313.15 K pressure sensitivity with M4A source-holdout and M4B joint-source fits",
         "status": "nonpromoting_experiment",
         "temperature_selection": {
             "temperature_k": TEMPERATURE_K,
@@ -754,10 +833,25 @@ def main() -> None:
         },
         "model_definition": {
             "M2": "fixed Pabsch CO2-water induced association with preregistered starts",
-            "M4": "M2 plus the sensitivity-selected subset of the three preregistered ionic coordinates",
+            "M4A": "M2 plus the sensitivity-selected ionic coordinates fitted only to Hilliard 30 wt% pressure rows",
+            "M4B": "M4A coordinates refitted to Hilliard and Jou 30 wt% pressure rows with equal total source weight",
         },
         "screen": screen,
-        "fit": fit,
+        "fits": {"M4A": fit_m4a, "M4B": fit_m4b},
+        "m4b_source_balance": {
+            "source_row_counts": source_counts,
+            "weighted_log10_rmse_by_model": source_balanced_objective,
+            "per_row_multipliers": {
+                source: next(
+                    joint_multipliers[str(row["observation_id"])]
+                    for row in joint_30wt
+                    if row["source_key"] == source
+                )
+                for source in source_counts
+            },
+            "frozen_split_changed": False,
+            "interpretation": "M4B intentionally consumes the Jou source-holdout for sensitivity analysis and is not eligible for promotion",
+        },
         "provider": {
             "version": metadata.version("epcsaft"),
             **comparison._installed_provider_identity(),
@@ -778,8 +872,10 @@ def main() -> None:
             name: comparison._sha256(RESULTS / name) for name in output_tables
         },
         "claim_boundary": (
-            "Pressure-only, single-temperature sensitivity experiment. Validation rows were not "
-            "used for selection or fitting; no parameter promotion or manuscript claim is allowed."
+            "Pressure-only, single-temperature sensitivity experiment. M4A preserves Jou as a "
+            "source holdout. M4B intentionally includes Jou in a source-balanced objective while "
+            "leaving the 17 and 40 wt% campaigns untouched. Neither fit permits parameter promotion "
+            "or a manuscript claim."
         ),
     }
     (RESULTS / "pressure_fit_receipt.json").write_text(

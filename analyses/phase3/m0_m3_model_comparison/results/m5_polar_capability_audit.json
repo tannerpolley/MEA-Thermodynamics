@@ -1,68 +1,146 @@
 {
-  "analysis_role": "readiness audit for a nested polar-model comparison",
-  "claim_boundary": "No M5 state was evaluated. The record establishes current EOS and parameter-evidence limits only.",
+  "analysis_role": "executed nested polar-model comparison",
+  "claim_boundary": "The polar equations are executable and compared against admitted pressure data. M5Q is a nested CO2 diagnostic. M5 is not an internally refitted polar parameterization and cannot support parameter promotion or a predictive manuscript claim.",
+  "conditions": {
+    "additional_17_and_40wt_rows_for_transfer_models": 12,
+    "complete_30wt_rows_per_model": 32,
+    "model_count": 8,
+    "new_state_evaluation_count": 114,
+    "temperature_k": 313.15,
+    "unified_prediction_row_count": 316
+  },
   "eos": {
-    "commit": "20e5d2868f78cda5e2367457f032ae71ba42112c",
-    "tree": "d082a8f102b32705b6cd6669a3e31a8d4ea8acd0",
-    "committed_ares_polar_available": false,
-    "current_dipole_input_role": "mixture permittivity and Born calculation, not a residual DD/DQ/QQ attraction",
-    "documentation": [
-      "docs/python-api.md:137",
-      "docs/adr/0003-explicit-parameter-inputs.md:35"
-    ],
-    "implementation_path": [
-      "https://github.com/ePC-SAFT/ePC-SAFT-eos/issues/52",
-      "https://github.com/ePC-SAFT/ePC-SAFT-eos/issues/53",
-      "https://github.com/ePC-SAFT/ePC-SAFT-eos/issues/54"
-    ]
+    "build_source": {
+      "commit": "b2638deb64772f2353f0382d0dc5a3210889a827",
+      "tree": "bc597191c98eafb11a954f391c5e9f18184f8147"
+    },
+    "execution_environment": "task-owned isolated wheel installation built from the recorded commit",
+    "installed_header_sha256": "881f5ec87293de8b1f3c25c16018aa94be69775fede2ec5426fcbb08e257fecd",
+    "installed_record_sha256": "45bda6ae4d5edccbb93e7731621c722c69ef45db9fbdc8318f6ac2354fe80a34",
+    "polar_formulation": "gross-vrabec-point-multipole",
+    "public_output": "State.ares_polar = a_DD + a_QQ + a_DQ35",
+    "version": "0.2.0.dev0"
+  },
+  "figure_outputs": {
+    "m0_m5_metric_scatter.pdf": "4cef0cd63af69b5789f64aa704be1e76520286be8f9ca446a8caf310a1473f67",
+    "m0_m5_metric_scatter.png": "9bb748e243bf4189e9bf6a03a8a52af3ce3c2f151ce88ff5ca77f793da1a6082",
+    "m0_m5_metric_scatter.svg": "30de881578ebaf7542a355e4682c194a4d647d2e84bc463123ca86b92c9483f3",
+    "m0_m5_pco2_30wt.pdf": "b923ed38a4e08ec794f8afd76a3bb007c4b1129b6307287a58a643ca67b09da4",
+    "m0_m5_pco2_30wt.png": "2d60389e6e1a5d1f15503e100f75b53de688ebdef712996220ae4f4c3144505d",
+    "m0_m5_pco2_30wt.svg": "a37b724254703563cbe6d497a5d7dc84ac506c5defde0ef5fe2f1105b0233b35",
+    "m0_m5_residuals_30wt.pdf": "66caf9aba49a33c1e9d8b08c0d78597248a718c5d19ac9203405df117a6e4495",
+    "m0_m5_residuals_30wt.png": "5bdd4a1fdf38edf8151a2b43ff009ee807c38580b4001d2b0cbe97ac357ee0a7",
+    "m0_m5_residuals_30wt.svg": "839ec3ad3adb4b99d43eff67fb32a51a4d98248bf7284cb381b976cd3a5496ef"
   },
   "literature_evidence": {
-    "co2_qq_candidate": {
-      "source": "Gross (2005), doi:10.1002/aic.10502, Table A1 first CO2 row",
-      "zotero_storage_key": "LYM2V8BA",
-      "source_sha256": "cfd73fa388bec051b91e4f51e1c2e16ddf2f2140b6c037996ab33290887c5d50",
-      "parameters": {
-        "segment_number": 1.5131,
-        "segment_diameter_angstrom": 3.1869,
-        "dispersion_energy_over_k_K": 163.33,
-        "quadrupole_moment_D_angstrom": 4.4
-      },
-      "status": "primary-source candidate fitted with QQ active"
+    "co2_qq_source": "Gross (2005), doi:10.1002/aic.10502, Table A1 first CO2 row",
+    "co2_qq_source_sha256": "cfd73fa388bec051b91e4f51e1c2e16ddf2f2140b6c037996ab33290887c5d50",
+    "dd_equation_source": "Gross and Vrabec (2006), doi:10.1002/aic.10683",
+    "dd_equation_source_sha256": "0f342632efca9425db2a2cc26bac652605ae8c787900f3864d060c59d8e2a2e3",
+    "dq_equation_source": "Vrabec and Gross (2009), doi:10.1021/jp072619u",
+    "dq_equation_source_sha256": "c58ae9e065580bf9cd80a26f3e8b8eb875b95ef11cb5004e60c42586b507d9a7",
+    "mea_dipole": "2.27 D stable gas-phase conformer from Tripathi (2016), chapter 7; liquid conformer population remains unresolved",
+    "water_dipole": "1.8546 D rotationless gas-phase value from Clough et al. (1973)"
+  },
+  "metric_highlights": {
+    "M0": {
+      "all-30wt": 0.41149192134583706
     },
-    "dd_equation": {
-      "source": "Gross and Vrabec (2006), doi:10.1002/aic.10683",
-      "zotero_storage_key": "DWISZT5F",
-      "source_sha256": "0f342632efca9425db2a2cc26bac652605ae8c787900f3864d060c59d8e2a2e3"
+    "M1": {
+      "all-30wt": 0.31723806465921134
     },
-    "dq_equation": {
-      "source": "Vrabec and Gross (2008), doi:10.1021/jp072619u",
-      "zotero_storage_key": "328F3YIN",
-      "source_sha256": "c58ae9e065580bf9cd80a26f3e8b8eb875b95ef11cb5004e60c42586b507d9a7"
+    "M2": {
+      "all-30wt": 0.315562587049916,
+      "untouched-17-and-40wt": 0.43444040362589625
     },
-    "component_parameter_coverage": {
-      "CO2_QQ": "candidate available",
-      "H2O_DD_with_association": "coherent refit not found in audited sources",
-      "MEA_DD_with_association": "coherent refit not found in audited sources",
-      "CO2_H2O_and_CO2_MEA_DQ": "requires executable DQ plus qualified DD/QQ component sets"
+    "M3": {
+      "all-30wt": 0.42077526415197736
+    },
+    "M4A": {
+      "all-30wt": 0.3277489915767367,
+      "untouched-17-and-40wt": 0.45707863376787683
+    },
+    "M4B": {
+      "all-30wt": 0.30645855971573954,
+      "untouched-17-and-40wt": 0.44630234526535945
+    },
+    "M5": {
+      "all-30wt": 2.745550794928189,
+      "untouched-17-and-40wt": 2.5653277795986345
+    },
+    "M5Q": {
+      "all-30wt": 0.7029452520081193,
+      "untouched-17-and-40wt": 0.5861639355915601
     }
   },
-  "recommended_stages": [
-    {
-      "model": "M5a",
-      "definition": "CO2 QQ diagnostic using the Gross (2005) measured-moment parameter set",
-      "blocked_by": "EOS issue 52",
-      "claim_limit": "diagnostic bracket; water and MEA are not yet refitted with DD"
+  "models": {
+    "M5": {
+      "definition": "M5Q plus physical neutral H2O and MEA dipoles, activating DD and DQ",
+      "dipole_moments_debye": {
+        "monoethanolamine": 2.27,
+        "water": 1.8546
+      },
+      "scientific_status": "full-equation diagnostic; H2O and MEA PC-SAFT/association parameters were not refitted with DD active"
     },
-    {
-      "model": "M5b",
-      "definition": "DD active with neutral H2O and MEA parameters refitted or independently qualified",
-      "blocked_by": "EOS issue 53 and missing coherent H2O/MEA polar parameter sets"
-    },
-    {
-      "model": "M5c",
-      "definition": "complete neutral DD + QQ + DQ comparison",
-      "blocked_by": "EOS issue 54 and completion of M5b"
+    "M5Q": {
+      "definition": "M2 induced association plus the Gross (2005) QQ-consistent CO2 pure set",
+      "parameters": {
+        "dispersion_energy_over_k": 163.33,
+        "quadrupole_moment": 4.4,
+        "segment_count": 1.5131,
+        "segment_diameter": 3.1869
+      },
+      "scientific_status": "component-consistent CO2 quadrupolar diagnostic"
     }
-  ],
-  "status": "M5_NOT_CURRENTLY_EXECUTABLE"
+  },
+  "outputs": {
+    "m0_m5_model_definitions.csv": "8de714f23df4c629dee08f7151d22879917c702f696c01f832083d40b0163734",
+    "m0_m5_pressure_metrics.csv": "2bc3aae474bf97b168f3ad021b1541fe44db02d6d07aba962e0f136752761b09",
+    "m0_m5_pressure_predictions.csv": "d848bad3353dcad350a984c540b4079990ee0d27348add34faf893500b198ad9"
+  },
+  "parameter_fingerprints": {
+    "M0": "sha256:7ac9cf016af9086a8f1c70189b524cbad1e29a75bb742862106d34ba7ab44ae0",
+    "M1": "sha256:a9cb660cbdafb60d0ae850ed0246012860d3f8b5cad3ec5ee4f6a3d351c0b0ed",
+    "M2": "sha256:8a08dd659a09f1dd2eed3430ca697af2b02066a9962db1ae6527c5148eab598e",
+    "M3": "sha256:b12a7472480b2733ab0e19ce6d1bd87492abb88bfddb44b273db152e3cf6d9a9",
+    "M4A": "sha256:d1466944f683c62376aeb832a01f0d2ddd782ebbf836e11d656195242fece977",
+    "M4B": "sha256:3e6cc5a6d053943fafcfc412b97bbdb15aeecc0608e4cfe4c9ffcc0788b2a3ab",
+    "M5": "sha256:2b1dc301842844acc3682509143335b7cf754456b55ad542d4c911859f8e0378",
+    "M5Q": "sha256:05f4fd91ae3f1ee1d5672fa1778458dcd2962a58d8d81a301070171b3ad4bd5e"
+  },
+  "reference_boundary_limit": {
+    "electroneutral_ion_multipliers": [
+      2.5,
+      1.0,
+      1.0,
+      1.0,
+      2.5,
+      1.0
+    ],
+    "ionic_mole_fraction_floor": 1e-12,
+    "reason": "the Provider rejects exact composition-boundary polar states",
+    "role": "numerical approximation to the existing neutral-pool reference limit; not a fitted parameter"
+  },
+  "retained_nonpolar_replay_checks": {
+    "M0": {
+      "absolute_difference_pa": 5.923261880980135e-12,
+      "merged_eos_predicted_pco2_pa": 2.959099862592627,
+      "observation_id": "vle_obs_0119",
+      "retained_predicted_pco2_pa": 2.95909986259855
+    },
+    "M2": {
+      "absolute_difference_pa": 0.0,
+      "merged_eos_predicted_pco2_pa": 1.742297734701001,
+      "observation_id": "vle_obs_0119",
+      "retained_predicted_pco2_pa": 1.742297734701001
+    }
+  },
+  "source_hashes": {
+    "analyses/phase3/m0_m3_model_comparison/results/comparison_receipt.json": "51bd3efb93ffb61f27640e5ad481dfb3c41e707b0b9120d12984801aa0a86bd8",
+    "analyses/phase3/m0_m3_model_comparison/results/pressure_fit_parameters.csv": "4245e97ef3c77a5ce49eb89ac64bfeb94f40da88cadcd30f628f8f1883dba586",
+    "data/reference/MEA/manifests/grouped_split_manifest.csv": "af205ad5968667cf25dc9205d780738035769664a94cc9a421cd3c67148ff804",
+    "data/reference/MEA/manifests/pco2_metrology_manifest.csv": "0d14803873a60534ec5d7df382cfbd0ae03e4aaeba68bb5d54be7e4def8397cc",
+    "data/reference/MEA/observations/vapor_liquid_equilibrium/Canonical_VLE_Observations.csv": "9e7d9ba5fead8bfa83a311dad341e3e2e8df1806d5249642a23562e99a72cb73"
+  },
+  "status": "M5_EXECUTED_DIAGNOSTIC_ONLY"
 }

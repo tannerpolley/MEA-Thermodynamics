@@ -1,6 +1,6 @@
-# M0--M4B reactive-model comparison
+# M0--M5 reactive-model comparison
 
-This standalone analysis compares six deliberately limited MEA--H2O--CO2
+This standalone analysis compares eight deliberately limited MEA--H2O--CO2
 model variants at 313.15 K. It does not alter the manuscript or promote a
 parameter set.
 
@@ -12,6 +12,8 @@ parameter set.
 | M3 | M2 with MEAH+ and MEACOO- segment diameters fitted to the frozen two-row pressure/speciation tracer. |
 | M4A | M2 with a sensitivity-selected subset of the preregistered ionic coordinates fitted to the 313.15 K Hilliard pressure campaign. |
 | M4B | The M4A coordinates fitted jointly to the 313.15 K Hilliard and Jou 30 wt% pressure campaigns with equal total weight per source. |
+| M5Q | M2 with the Gross (2005) QQ-consistent CO2 pure-component set and the measured 4.4 D angstrom quadrupole. |
+| M5 | M5Q with fixed physical H2O and MEA dipoles, activating the complete neutral DD, QQ, and DQ contribution. |
 
 M1 is a controlled neutral-parent transfer experiment, not a literature
 reproduction. M2 retains the current CO2 and water parameters and applies the
@@ -85,6 +87,10 @@ PYTHONPATH=src:analyses/phase3/m0_m3_model_comparison/scripts \
   python analyses/phase3/m0_m3_model_comparison/scripts/run_pressure_sensitivity_fit.py
 PYTHONPATH=src python \
   analyses/phase3/m0_m3_model_comparison/scripts/render_pressure_sensitivity_fit.py
+PYTHONPATH=src:analyses/phase3/m0_m3_model_comparison/scripts \
+  python analyses/phase3/m0_m3_model_comparison/scripts/run_polar_comparison.py
+PYTHONPATH=src python \
+  analyses/phase3/m0_m3_model_comparison/scripts/render_polar_comparison.py
 ```
 
 The result CSV files are the exact plotted data. The Amundsen density series is
@@ -103,28 +109,46 @@ scale is therefore comparable across parameter families even though their
 derivative coordinate scales differ. It is a response to those explicit step
 choices, not a scale-free ranking of global parameter importance.
 
-## M5 polar-capability audit
+## M5 polar experiments
 
-M5 would add the Gross--Vrabec dipole--dipole, quadrupole--quadrupole, and
-dipole--quadrupole residual Helmholtz contributions to the neutral H2O, CO2,
-and MEA model. It is not executable in the installed EOS used here. The current
-dipole and polarizability inputs feed the mixture-permittivity and Born path;
-they do not activate a residual polar attraction. EOS issues 51--54 define the
-pending aggregate `ares_polar` implementation.
+The clean EOS at commit `b2638deb64772f2353f0382d0dc5a3210889a827`
+implements the Gross--Vrabec DD, QQ, and DQ35 contributions and exposes their
+sum as `State.ares_polar`. M5Q uses the Gross (2005) CO2 set fitted with QQ
+active: \(m=1.5131\), \(\sigma=3.1869\) angstrom,
+\(\epsilon/k=163.33\) K, and \(|Q|=4.4\) D angstrom. M5 adds fixed dipoles of
+1.8546 D for water and 2.27 D for the stable gas-phase MEA conformer reported
+by Tripathi (2016, doi:10.5821/dissertation-2117-106297, chapter 7). The MEA
+value is a conformer-specific diagnostic, not a fitted liquid-phase effective
+moment.
 
-Gross (2005) supplies a directly usable PCP-SAFT CO2 candidate fitted with the
-quadrupole contribution active: \(m=1.5131\), \(\sigma=3.1869\) angstrom,
-\(\epsilon/k=163.33\) K, and \(|Q|=4.4\) D angstrom. The audited sources do not
-supply an equivalently coherent dipolar-associating refit for both water and
-MEA. Schick et al. (2023), for example, retains ordinary associating water,
-uses induced association for CO2, and activates a dipolar term for NMP rather
-than MEA. A future M5 comparison must therefore refit or independently qualify
-the water and MEA neutral parameters with the polar equations active; combining
-the CO2 set with the current nonpolar water and MEA sets would not be a
-controlled model comparison.
+At 30 wt% MEA, M5Q has a log10-pressure RMSE of 0.7029, compared with 0.3156
+for M2. It is close at the lowest Hilliard state (7.38 Pa predicted versus
+5.7 Pa observed) but increasingly overpredicts pressure with loading, reaching
+74.28 kPa versus 28.3 kPa at loading 0.591. The 17 and 40 wt% transfer RMSE is
+0.5862, also worse than M2's 0.4344. The QQ-consistent CO2 set is therefore not
+transferable into the existing reactive mixture model without revisiting its
+unlike interactions and induced-association treatment.
 
-The resulting staged route is M5a (CO2 QQ diagnostic after EOS issue 52), M5b
-(neutral water and MEA refit with DD after issue 53), and M5c (DQ cross terms
-after issue 54). The first stage can isolate whether explicit CO2 quadrupolar
-physics changes the pressure-curve shape. It cannot, by itself, qualify an
-all-polar MEA--H2O--CO2 parameterization.
+Full M5 is intentionally more stringent: it activates DD and DQ while retaining
+the existing water and MEA PC-SAFT and association parameters. It produces a
+30 wt% RMSE of 2.7456 and overpredicts pressure by roughly two to three orders
+of magnitude across the loading span. Its `ares_polar` ranges from -2.55 to
+-2.02 over the executed states, whereas M5Q remains between approximately
+-2.6e-7 and zero. The result is direct evidence that the old effective
+dispersion and association parameters cannot simply be combined with physical
+dipoles. Water and MEA must be refitted with DD active, and the CO2--water and
+CO2--MEA mixture treatment must then be reassessed before a polar model can be
+judged on predictive data.
+
+The polar EOS rejects exact composition-boundary states. The existing
+neutral-pool activity reference is therefore evaluated as an electroneutral
+infinite-dilution limit with a declared base ionic mole-fraction floor of
+\(10^{-12}\). A sentinel check from \(10^{-8}\) to \(10^{-12}\) changed the
+full-M5 pressure by less than 1% at the lowest Hilliard loading; this numerical
+effect is negligible relative to the model discrepancy. No reacting state uses
+the floor.
+
+M5Q and M5 are diagnostic comparisons only. M5Q changes both the CO2 pure set
+and the QQ equation as required for component consistency. M5 does not supply
+the missing dipolar-associating refits. Neither result permits parameter
+promotion or a manuscript claim.

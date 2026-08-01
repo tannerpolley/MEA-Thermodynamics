@@ -1,5 +1,5 @@
 id: m0_m3_model_comparison
-title: M0--M4B reactive ePC-SAFT comparison and M5 capability audit
+title: M0--M5 reactive ePC-SAFT and polar comparison
 status: nonpromoting_experiment
 manuscript_integration: excluded
 inputs:
@@ -24,10 +24,16 @@ outputs:
   - results/pressure_fit_predictions.csv
   - results/pressure_fit_metrics.csv
   - results/m5_polar_capability_audit.json
+  - results/m0_m5_model_definitions.csv
+  - results/m0_m5_pressure_predictions.csv
+  - results/m0_m5_pressure_metrics.csv
   - figures/m0_m3_pco2_loading_comparison.svg
   - figures/m0_m3_species_by_loading.svg
   - figures/m0_m3_density_context.svg
   - figures/m4_pressure_fit_by_composition.svg
   - figures/m4_pressure_parameter_sensitivity.svg
   - figures/m4_pressure_fit_residuals.svg
-claim_boundary: The results are diagnostic model comparisons. M3 is a two-row fit, M4A is a single-source pressure fit, M4B is a joint-source pressure fit, and M5 is not executable; none permits parameter promotion or a predictive claim.
+  - figures/m0_m5_pco2_30wt.svg
+  - figures/m0_m5_residuals_30wt.svg
+  - figures/m0_m5_metric_scatter.svg
+claim_boundary: The results are diagnostic model comparisons. M3 is a two-row fit, M4A is a single-source pressure fit, M4B is a joint-source pressure fit, M5Q uses a QQ-consistent CO2 set, and M5 activates full neutral DD/QQ/DQ without refitting H2O or MEA; none permits parameter promotion or a predictive claim.

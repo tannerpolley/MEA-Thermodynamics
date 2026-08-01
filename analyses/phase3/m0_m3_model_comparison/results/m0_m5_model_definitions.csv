@@ -1,0 +1,9 @@
+model_id,label,parameter_status,parameter_fingerprint,polar_active,co2_quadrupole_debye_angstrom,water_dipole_debye,mea_dipole_debye
+M0,base,fixed regression input,sha256:7ac9cf016af9086a8f1c70189b524cbad1e29a75bb742862106d34ba7ab44ae0,false,,,
+M1,neutral-parent transfer,controlled diagnostic,sha256:a9cb660cbdafb60d0ae850ed0246012860d3f8b5cad3ec5ee4f6a3d351c0b0ed,false,,,
+M2,induced association,fixed literature topology,sha256:8a08dd659a09f1dd2eed3430ca697af2b02066a9962db1ae6527c5148eab598e,false,,,
+M3,two-row ionic fit,bound-limited diagnostic,sha256:b12a7472480b2733ab0e19ce6d1bd87492abb88bfddb44b273db152e3cf6d9a9,false,,,
+M4A,Hilliard pressure fit,nonpromoting fit,sha256:d1466944f683c62376aeb832a01f0d2ddd782ebbf836e11d656195242fece977,false,,,
+M4B,Hilliard + Jou pressure fit,nonpromoting fit,sha256:3e6cc5a6d053943fafcfc412b97bbdb15aeecc0608e4cfe4c9ffcc0788b2a3ab,false,,,
+M5Q,M2 + CO2 QQ,component-consistent CO2 diagnostic,sha256:05f4fd91ae3f1ee1d5672fa1778458dcd2962a58d8d81a301070171b3ad4bd5e,true,4.4,,
+M5,M5Q + H2O/MEA DD + DQ,unrefitted full-polar diagnostic,sha256:2b1dc301842844acc3682509143335b7cf754456b55ad542d4c911859f8e0378,true,4.4,1.8546,2.27

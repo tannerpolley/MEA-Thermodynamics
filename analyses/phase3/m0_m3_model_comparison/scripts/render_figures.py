@@ -50,7 +50,10 @@ def _pco2_loading() -> None:
     rows = _rows(RESULTS / "pco2_loading_comparison.csv")
     fig, axes = plt.subplots(2, 2, figsize=(8.3, 6.2), sharex=True, sharey=True)
     for axis, model_id in zip(axes.flat, COLORS, strict=True):
-        selected = [row for row in rows if row["model_id"] == model_id]
+        selected = sorted(
+            (row for row in rows if row["model_id"] == model_id),
+            key=lambda row: float(row["loading"]),
+        )
         loading = [float(row["loading"]) for row in selected]
         observed = [float(row["observed_pco2_pa"]) / 1000.0 for row in selected]
         predicted = [float(row["predicted_pco2_pa"]) / 1000.0 for row in selected]
@@ -63,12 +66,12 @@ def _pco2_loading() -> None:
             s=30,
             label="Hilliard (2008)",
         )
-        axis.scatter(
+        axis.plot(
             loading,
             predicted,
             color=COLORS[model_id],
-            marker="x",
-            s=30,
+            linestyle="--",
+            linewidth=1.6,
             label="model",
         )
         axis.set_title(DISPLAY[model_id])

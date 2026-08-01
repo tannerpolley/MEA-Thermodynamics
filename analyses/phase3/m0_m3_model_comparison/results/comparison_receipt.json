@@ -2,7 +2,7 @@
   "analysis_file_hashes": {
     "analyses/phase3/m0_m3_model_comparison/README.md": "d8468fbff075a953f35534d9f987bf50b8d053ad900e8d19ec71e79c3b3861ae",
     "analyses/phase3/m0_m3_model_comparison/analysis.yaml": "8dfb2857a0155511194e8c65de3099f5112c01b52e68390a2127c925092ce6af",
-    "analyses/phase3/m0_m3_model_comparison/scripts/render_figures.py": "5d57227ce8a1cb672acd86ead9c170cf2ea87725a3162074375fef4440279c90",
+    "analyses/phase3/m0_m3_model_comparison/scripts/render_figures.py": "d78ac93a1db82dc1f9fa6054bf61d9202a9cd10d5712aea7974dfb8346aa605e",
     "analyses/phase3/m0_m3_model_comparison/scripts/run_comparison.py": "4f146f6185cd161de3d1f67b187645317c28bd6ff72fa57919141650d9122f73"
   },
   "conditions": {
@@ -28,9 +28,9 @@
     "m0_m3_density_context.pdf": "8107738f791ff26170e471d6b65cc32d326c3f2a7e515c351ac7ec7201c4c6f1",
     "m0_m3_density_context.png": "1384da1089e60513d025570d60dc6515901090f5e804ba2ff9a88fade72d1362",
     "m0_m3_density_context.svg": "fa9979067170ff691ac924fa36b0abd272a70eadf0a792c532d09b81c2496339",
-    "m0_m3_pco2_loading_comparison.pdf": "6b000a8287290052b519c608fd2124b37c399a59aec098cf165cd744b2b10bba",
-    "m0_m3_pco2_loading_comparison.png": "51e21ee3bf9ba85661d7e92565e043386a47ddc87b84d3bdbd70f892fb6bfa96",
-    "m0_m3_pco2_loading_comparison.svg": "fe21f77af86510bde76da3d7ded0a48d4f5206c5308167eddf28aa5e0f32aae8",
+    "m0_m3_pco2_loading_comparison.pdf": "76bec5c1e7edb4913939436d500cff7af601fd7ce187be37f94983b3ac267e14",
+    "m0_m3_pco2_loading_comparison.png": "af1f40b8bc33aaa644b2dd97ecaf012f6a265034f6ed31082838368617a80d4c",
+    "m0_m3_pco2_loading_comparison.svg": "14cff49c0535766bf3ef0c6c7fab2190cea38a8f2b1414aa53ec73a837df23e3",
     "m0_m3_species_by_loading.pdf": "85321c386a834df50494acbed5f0a6e127c645b407587e0a26983eb1f2a005e7",
     "m0_m3_species_by_loading.png": "3c922b7fef72dff0743ee1a8dcbd6c40611daa85386c9812716ee6c8b895a70b",
     "m0_m3_species_by_loading.svg": "ef358d7e8c9325f073581ea577a45b5c97895ec0d8baa80d78c84e98d4c3b232"

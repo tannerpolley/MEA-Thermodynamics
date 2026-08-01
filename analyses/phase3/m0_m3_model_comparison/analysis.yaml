@@ -1,5 +1,5 @@
 id: m0_m3_model_comparison
-title: M0--M3 reactive ePC-SAFT comparison
+title: M0--M4 reactive ePC-SAFT comparison
 status: nonpromoting_experiment
 manuscript_integration: excluded
 inputs:
@@ -8,13 +8,25 @@ inputs:
   - data/reference/MEA/observations/density_viscosity/Amundsen_2009_density_viscosity.csv
   - data/reference/MEA/observations/vapor_liquid_equilibrium/Canonical_VLE_Observations.csv
   - data/reference/MEA/manifests/pco2_metrology_manifest.csv
+  - data/reference/MEA/manifests/grouped_split_manifest.csv
 outputs:
   - results/comparison_receipt.json
   - results/model_summary.csv
   - results/species_predictions.csv
   - results/loading_predictions.csv
   - results/pco2_loading_comparison.csv
+  - results/pressure_fit_receipt.json
+  - results/pressure_row_inventory.csv
+  - results/pressure_parameter_sensitivity.csv
+  - results/pressure_sensitivity_by_row.csv
+  - results/pressure_active_correlation.csv
+  - results/pressure_fit_parameters.csv
+  - results/pressure_fit_predictions.csv
+  - results/pressure_fit_metrics.csv
   - figures/m0_m3_pco2_loading_comparison.svg
   - figures/m0_m3_species_by_loading.svg
   - figures/m0_m3_density_context.svg
-claim_boundary: The results are diagnostic model comparisons; M3 is a two-row fit with no promotion or predictive claim.
+  - figures/m4_pressure_fit_by_composition.svg
+  - figures/m4_pressure_parameter_sensitivity.svg
+  - figures/m4_pressure_fit_residuals.svg
+claim_boundary: The results are diagnostic model comparisons. M3 is a two-row fit and M4 is a single-temperature pressure fit; neither permits parameter promotion or a predictive claim.

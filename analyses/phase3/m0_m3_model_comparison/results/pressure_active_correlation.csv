@@ -1,0 +1,10 @@
+parameter_a,parameter_b,correlation
+MEAH+::sigma,MEAH+::sigma,1.0
+MEAH+::sigma,MEAH+::epsilon_over_k,0.0026621180101197425
+MEAH+::sigma,MEACOO-::sigma,0.4215781769634501
+MEAH+::epsilon_over_k,MEAH+::sigma,0.0026621180101197425
+MEAH+::epsilon_over_k,MEAH+::epsilon_over_k,0.9999999999999999
+MEAH+::epsilon_over_k,MEACOO-::sigma,-0.9028862803292147
+MEACOO-::sigma,MEAH+::sigma,0.42157817696345007
+MEACOO-::sigma,MEAH+::epsilon_over_k,-0.9028862803292147
+MEACOO-::sigma,MEACOO-::sigma,0.9999999999999999

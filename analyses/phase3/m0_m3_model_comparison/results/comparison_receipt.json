@@ -1,0 +1,144 @@
+{
+  "analysis_file_hashes": {
+    "analyses/phase3/m0_m3_model_comparison/README.md": "1aa458662f30edc6fc97658a89fb7a0337e414c0b8a00d95482d355c9f1a89e3",
+    "analyses/phase3/m0_m3_model_comparison/analysis.yaml": "7f1b4f6aab7cb72b75e191bb311f9333abc28e2f9435724db081863bc77afd88",
+    "analyses/phase3/m0_m3_model_comparison/scripts/render_figures.py": "e793e4d9d6b45b4660a73d8b6a00a786bf36fb2d386f16a0d7e092219967eb3f",
+    "analyses/phase3/m0_m3_model_comparison/scripts/run_comparison.py": "c294dbe2938ddab76f63d99e839ef495e855eef511cab61212b981ed9265d0ce"
+  },
+  "conditions": {
+    "loading_grid": [
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.466,
+      0.5,
+      0.6
+    ],
+    "mea_mass_fraction_unloaded": 0.3,
+    "pressure_pa": 7326.7,
+    "temperature_k": 313.15
+  },
+  "density_context": {
+    "reason": "Amundsen source rows do not report pressure in the admitted table.",
+    "status": "PLOTTED_NOT_FITTED"
+  },
+  "experiment": "m0_m3_reactive_model_comparison",
+  "figure_outputs": {
+    "m0_m3_density_context.pdf": "8107738f791ff26170e471d6b65cc32d326c3f2a7e515c351ac7ec7201c4c6f1",
+    "m0_m3_density_context.png": "1384da1089e60513d025570d60dc6515901090f5e804ba2ff9a88fade72d1362",
+    "m0_m3_density_context.svg": "fa9979067170ff691ac924fa36b0abd272a70eadf0a792c532d09b81c2496339",
+    "m0_m3_species_by_loading.pdf": "85321c386a834df50494acbed5f0a6e127c645b407587e0a26983eb1f2a005e7",
+    "m0_m3_species_by_loading.png": "3c922b7fef72dff0743ee1a8dcbd6c40611daa85386c9812716ee6c8b895a70b",
+    "m0_m3_species_by_loading.svg": "ef358d7e8c9325f073581ea577a45b5c97895ec0d8baa80d78c84e98d4c3b232",
+    "m0_m3_tracer_comparison.pdf": "11488f41b4bca431e30ef7a66f3cb332ff3c139d44d1c7b6f62b0f23470c05bb",
+    "m0_m3_tracer_comparison.png": "34f2a0b91603bb94ee823ead5052596d83ad51f5fa0350f9b25c677e67706de1",
+    "m0_m3_tracer_comparison.svg": "983eda69f5d406e86137cbbd825de01ab1b2f5d438efde3bb888cae194798d06"
+  },
+  "m3_fit": {
+    "acceptance_reason": "rejected_active_parameter_bound",
+    "active_bound_passed": false,
+    "bounds": [
+      [
+        2.0,
+        2.0
+      ],
+      [
+        5.8,
+        5.8
+      ]
+    ],
+    "confirmation": {
+      "cost": 0.0002344724838798875,
+      "message": "`gtol` termination condition is satisfied.",
+      "nfev": 9,
+      "residuals": [
+        0.00010777558337058664,
+        -0.021654869017923063
+      ],
+      "success": true,
+      "values": [
+        3.4484447585135394,
+        2.0000000000000346
+      ]
+    },
+    "confirmation_affine_max_delta": 5.497638835400291e-09,
+    "confirmation_passed": true,
+    "evaluation_count": 62,
+    "jacobian_condition_number": 49.51901307657925,
+    "jacobian_rank": 2,
+    "jacobian_singular_values": [
+      0.5074252408606543,
+      0.01024707903762017
+    ],
+    "parameters": [
+      "MEAH+::sigma",
+      "MEACOO-::sigma"
+    ],
+    "primary": {
+      "cost": 0.0002344724838246462,
+      "message": "`ftol` termination condition is satisfied.",
+      "nfev": 13,
+      "residuals": [
+        0.00010777991707672904,
+        -0.021654868993802926
+      ],
+      "success": true,
+      "values": [
+        3.448444768959053,
+        2.0000000000000044
+      ]
+    },
+    "promotion_allowed": false,
+    "scaled_distance_to_nearest_bound": [
+      0.7623393520837122,
+      2.3373116307898034e-15
+    ],
+    "starts": [
+      [
+        3.48508556586,
+        3.53543525721
+      ],
+      [
+        2.53508556586,
+        4.48543525721
+      ]
+    ],
+    "tracer_accepted": false,
+    "units": [
+      "angstrom",
+      "angstrom"
+    ]
+  },
+  "manuscript_modified": false,
+  "models": {
+    "M0": "current authority-neutral regression-input bundle",
+    "M1": "M0 with neutral-MEA sigma and epsilon transferred to MEAH+",
+    "M2": "M0 with fixed Pabsch2020 CO2--water induced association",
+    "M3": "M2 with two fitted ion segment diameters"
+  },
+  "outputs": {
+    "loading_predictions.csv": "f8ef75ec48403cad063675a982ecb47094fdf519648e68f6d304c7da4c7cdd83",
+    "model_summary.csv": "f0663921cd7ac04dd8d6b2aa6da31ca19429a0b8ef35e95bda44f8ff7c3a3196",
+    "species_predictions.csv": "5e3ca067385f87b94e8d947b8945a1788828c5dd6dc7daa2134b409a18f65780"
+  },
+  "provider": {
+    "commit": "20e5d2868f78cda5e2367457f032ae71ba42112c",
+    "execution_environment": "task-owned isolated wheel installation built from the recorded commit",
+    "installed_header_sha256": "881f5ec87293de8b1f3c25c16018aa94be69775fede2ec5426fcbb08e257fecd",
+    "installed_record_sha256": "da43fd22a773c4c3fafa31dcc4b55a6f536aebe8f0b05adec9e1dfc394c7032f",
+    "module": "epcsaft/__init__.py",
+    "tree": "d082a8f102b32705b6cd6669a3e31a8d4ea8acd0",
+    "version": "0.2.0.dev0"
+  },
+  "schema_version": 1,
+  "scientific_claim_boundary": "M3 is fitted to two training observations at one state; no predictive, identifiability, validation, or parameter-promotion claim is admitted.",
+  "source_hashes": {
+    "analyses/phase3/ionic_epcsaft_regression/ionic_volumetric_fit_preregistration.json": "33f8f73065c69d0cb67fb68529e9a981459fcae854712bb9c412cf35026cf28e",
+    "data/reference/epcsaft_bundles/mea-co2-h2o-nine-species-regression-input/1/association.csv": "195a8047403fc20ed414f29835d9f8d936e349e5baf4fb4264b7f2acb412b83e",
+    "data/reference/epcsaft_bundles/mea-co2-h2o-nine-species-regression-input/1/bundle.toml": "ef19afb3e5495e1128edf751f177a308c1e5a3ca6f8ad2948f25718f829cf96d",
+    "data/reference/epcsaft_bundles/mea-co2-h2o-nine-species-regression-input/1/single.csv": "feb86ed20feca7956e640845f0a1a1e14fde956bdad9900908fca560a6743c9a",
+    "data/reference/epcsaft_bundles/mea-co2-h2o-nine-species-regression-input/1/sites.csv": "67b27bd84679bdf513a36ec4f1ca9e3dd1ee5923bab4fb5851cb64a1fe60ba8b"
+  },
+  "status": "COMPLETED_REJECTED_BOUND_LIMITED_M3_EXPERIMENT"
+}

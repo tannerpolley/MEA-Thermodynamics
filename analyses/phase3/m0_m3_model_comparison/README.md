@@ -41,4 +41,8 @@ PYTHONPATH=src python analyses/phase3/m0_m3_model_comparison/scripts/render_figu
 
 The result CSV files are the exact plotted data. The Amundsen density series is
 context only: its source table does not report pressure, so it is not used in
-the M3 objective.
+the M3 objective. The four-panel pressure comparison uses the 24 Hilliard rows
+at 313.15 K and 30 wt% MEA for which both calibrated CO2 partial pressure and
+row-reported total pressure are available. Each model is evaluated at each
+row's reported total pressure; sources without a complete pressure state are
+not mixed into this figure.

@@ -36,6 +36,12 @@ PREREGISTRATION = (
     / "analyses/phase3/ionic_epcsaft_regression"
     / "ionic_volumetric_fit_preregistration.json"
 )
+VLE_OBSERVATIONS = (
+    ROOT
+    / "data/reference/MEA/observations/vapor_liquid_equilibrium"
+    / "Canonical_VLE_Observations.csv"
+)
+PCO2_METROLOGY = ROOT / "data/reference/MEA/manifests/pco2_metrology_manifest.csv"
 TEMPERATURE_K = 313.15
 PRESSURE_PA = 7326.7
 MEA_MASS_FRACTION = 0.30
@@ -252,6 +258,8 @@ def _prepare_bundle(
 class Prediction:
     model_id: str
     loading: float
+    temperature_k: float
+    pressure_pa: float
     parameter_fingerprint: str
     success: bool
     max_abs_reaction_balance_residual: float
@@ -261,22 +269,31 @@ class Prediction:
 
 
 class ProviderActivityEvaluator:
-    def __init__(self, model: Any, unit_registry: Any) -> None:
+    def __init__(
+        self,
+        model: Any,
+        unit_registry: Any,
+        *,
+        temperature_k: float,
+        pressure_pa: float,
+    ) -> None:
         self.model = model
         self.u = unit_registry
+        self.temperature_k = temperature_k
+        self.pressure_pa = pressure_pa
 
     def _liquid_state(self, x: np.ndarray) -> Any:
         def pressure_residual(density: float) -> float:
             state = self.model.state(
-                T=TEMPERATURE_K * self.u.kelvin,
+                T=self.temperature_k * self.u.kelvin,
                 rho=density * self.u.mole / self.u.meter**3,
                 x=tuple(float(value) for value in x),
             )
-            return float(state.pressure.to("pascal").magnitude) - PRESSURE_PA
+            return float(state.pressure.to("pascal").magnitude) - self.pressure_pa
 
         density = brentq(pressure_residual, 20_000.0, 70_000.0, xtol=1.0e-7)
         return self.model.state(
-            T=TEMPERATURE_K * self.u.kelvin,
+            T=self.temperature_k * self.u.kelvin,
             rho=density * self.u.mole / self.u.meter**3,
             x=tuple(float(value) for value in x),
         )
@@ -287,8 +304,8 @@ class ProviderActivityEvaluator:
         pressure_Pa: float,
         mole_fractions: np.ndarray,
     ) -> ActivityState:
-        if temperature_K != TEMPERATURE_K or pressure_Pa != PRESSURE_PA:
-            raise ValueError("comparison evaluator is fixed at the tracer T and P")
+        if temperature_K != self.temperature_k or pressure_Pa != self.pressure_pa:
+            raise ValueError("comparison evaluator state does not match the requested state")
         x = np.asarray(mole_fractions, dtype=float)
         finite = self._liquid_state(x)
         reference_x = x.copy()
@@ -320,21 +337,33 @@ def _molar_masses(bundle: Path) -> np.ndarray:
     return np.asarray([values[component] for component in COMPONENT_IDS])
 
 
-def _predict(bundle: Path, model_id: str, loading: float) -> Prediction:
+def _predict(
+    bundle: Path,
+    model_id: str,
+    loading: float,
+    *,
+    temperature_k: float = TEMPERATURE_K,
+    pressure_pa: float = PRESSURE_PA,
+) -> Prediction:
     import epcsaft
 
     model = epcsaft.Mixture(
         epcsaft.Parameters.from_bundle(bundle, components=COMPONENT_IDS)
     )
-    evaluator = ProviderActivityEvaluator(model, epcsaft.unit_registry)
+    evaluator = ProviderActivityEvaluator(
+        model,
+        epcsaft.unit_registry,
+        temperature_k=temperature_k,
+        pressure_pa=pressure_pa,
+    )
     initial = solve_ideal_speciation(
-        loading, MEA_MASS_FRACTION, TEMPERATURE_K
+        loading, MEA_MASS_FRACTION, temperature_k
     ).mole_fractions
     solved: ActivitySpeciationResult = solve_activity_speciation(
         loading=loading,
         mea_weight_fraction=MEA_MASS_FRACTION,
-        temperature_K=TEMPERATURE_K,
-        pressure_Pa=PRESSURE_PA,
+        temperature_K=temperature_k,
+        pressure_Pa=pressure_pa,
         evaluator=evaluator,
         initial_mole_fractions=initial,
         max_nfev=500,
@@ -349,6 +378,8 @@ def _predict(bundle: Path, model_id: str, loading: float) -> Prediction:
     return Prediction(
         model_id=model_id,
         loading=loading,
+        temperature_k=temperature_k,
+        pressure_pa=pressure_pa,
         parameter_fingerprint=model.parameter_fingerprint,
         success=solved.success,
         max_abs_reaction_balance_residual=solved.max_abs_residual,
@@ -356,6 +387,60 @@ def _predict(bundle: Path, model_id: str, loading: float) -> Prediction:
         density_kg_m3=density,
         mole_fractions=dict(zip(SPECIES_9, solved.mole_fractions.tolist(), strict=True)),
     )
+
+
+def _pco2_observations() -> list[dict[str, object]]:
+    with VLE_OBSERVATIONS.open(newline="", encoding="utf-8") as handle:
+        canonical = list(csv.DictReader(handle))
+    with PCO2_METROLOGY.open(newline="", encoding="utf-8") as handle:
+        metrology = {
+            row["observation_id"]: row for row in csv.DictReader(handle)
+        }
+
+    rows: list[dict[str, object]] = []
+    for row in canonical:
+        required = (
+            "temperature_canonical_C",
+            "MEA_weight_fraction",
+            "CO2_loading",
+            "CO2_pressure",
+            "total_pressure",
+        )
+        if row["source_key"] != "Hilliard2008" or not all(row[key] for key in required):
+            continue
+        if not math.isclose(float(row["temperature_canonical_C"]), 40.0):
+            continue
+        if not math.isclose(float(row["MEA_weight_fraction"]), MEA_MASS_FRACTION):
+            continue
+        role = metrology[row["observation_id"]]
+        pressure_pa = 1000.0 * float(row["total_pressure"])
+        observed_pco2_pa = 1000.0 * float(row["CO2_pressure"])
+        if role["target_eligible"] != "yes":
+            raise ValueError(f"ineligible pCO2 row selected: {row['observation_id']}")
+        if role["measurement_origin"] != "calibration_derived_partial_pressure":
+            raise ValueError(f"pCO2 metrology role drift: {row['observation_id']}")
+        if role["pressure_specification"] != "row_reported_total_pressure":
+            raise ValueError(f"pressure role drift: {row['observation_id']}")
+        if not math.isclose(float(role["state_pressure_pa"]), pressure_pa):
+            raise ValueError(f"state-pressure drift: {row['observation_id']}")
+        if not math.isclose(1000.0 * float(role["observed_pco2_kpa"]), observed_pco2_pa):
+            raise ValueError(f"observed-pCO2 drift: {row['observation_id']}")
+        rows.append(
+            {
+                "observation_id": row["observation_id"],
+                "active_row_id": row["active_row_id"],
+                "source_row": row["source_row"],
+                "loading": float(row["CO2_loading"]),
+                "temperature_k": TEMPERATURE_K,
+                "pressure_pa": pressure_pa,
+                "observed_pco2_pa": observed_pco2_pa,
+                "measurement_origin": role["measurement_origin"],
+                "source_locator": role["source_locator"],
+            }
+        )
+    if len(rows) != 24:
+        raise ValueError(f"expected 24 state-complete Hilliard pCO2 rows, found {len(rows)}")
+    return rows
 
 
 def _fit_m3(work: Path) -> tuple[np.ndarray, dict[str, Any]]:
@@ -477,6 +562,8 @@ def _write_csv(path: Path, rows: list[dict[str, object]]) -> None:
 def main() -> None:
     RESULTS.mkdir(parents=True, exist_ok=True)
     predictions: list[Prediction] = []
+    pco2_predictions: list[dict[str, object]] = []
+    pco2_observations = _pco2_observations()
     with tempfile.TemporaryDirectory(prefix="mea-m0m3-") as temporary:
         work = Path(temporary)
         bundles: dict[str, Path] = {}
@@ -491,8 +578,30 @@ def main() -> None:
         for model_id in MODEL_ORDER:
             for loading in LOADING_GRID:
                 predictions.append(_predict(bundles[model_id], model_id, loading))
+            for observation in pco2_observations:
+                row = _predict(
+                    bundles[model_id],
+                    model_id,
+                    float(observation["loading"]),
+                    temperature_k=float(observation["temperature_k"]),
+                    pressure_pa=float(observation["pressure_pa"]),
+                )
+                pco2_predictions.append(
+                    {
+                        "model_id": model_id,
+                        **observation,
+                        "predicted_pco2_pa": row.pco2_pa,
+                        "success": row.success,
+                        "max_abs_reaction_balance_residual": (
+                            row.max_abs_reaction_balance_residual
+                        ),
+                        "parameter_fingerprint": row.parameter_fingerprint,
+                    }
+                )
 
-    if not all(row.success for row in predictions):
+    if not all(row.success for row in predictions) or not all(
+        bool(row["success"]) for row in pco2_predictions
+    ):
         raise RuntimeError("one or more comparison states failed")
     tracer = {
         row.model_id: row
@@ -531,8 +640,8 @@ def main() -> None:
             {
                 "model_id": row.model_id,
                 "loading_mol_co2_per_mol_mea": row.loading,
-                "temperature_k": TEMPERATURE_K,
-                "pressure_pa": PRESSURE_PA,
+                "temperature_k": row.temperature_k,
+                "pressure_pa": row.pressure_pa,
                 "pco2_pa": row.pco2_pa,
                 "density_kg_m3": row.density_kg_m3,
                 "max_abs_reaction_balance_residual": row.max_abs_reaction_balance_residual,
@@ -543,14 +652,15 @@ def main() -> None:
                 {
                     "model_id": row.model_id,
                     "loading_mol_co2_per_mol_mea": row.loading,
-                    "temperature_k": TEMPERATURE_K,
-                    "pressure_pa": PRESSURE_PA,
+                    "temperature_k": row.temperature_k,
+                    "pressure_pa": row.pressure_pa,
                     "species": species,
                     "mole_fraction": value,
                 }
             )
     _write_csv(RESULTS / "loading_predictions.csv", loading_rows)
     _write_csv(RESULTS / "species_predictions.csv", species_rows)
+    _write_csv(RESULTS / "pco2_loading_comparison.csv", pco2_predictions)
 
     import epcsaft
 
@@ -584,6 +694,17 @@ def main() -> None:
             "status": "PLOTTED_NOT_FITTED",
             "reason": "Amundsen source rows do not report pressure in the admitted table.",
         },
+        "pco2_loading_comparison": {
+            "source": "Hilliard2008",
+            "observation_count": len(pco2_observations),
+            "loading_range": [
+                pco2_observations[0]["loading"],
+                pco2_observations[-1]["loading"],
+            ],
+            "state_policy": "row_reported_total_pressure",
+            "measurement_origin": "calibration_derived_partial_pressure",
+            "model_count": len(MODEL_ORDER),
+        },
         "provider": {
             "version": getattr(epcsaft, "__version__", "0.2.0.dev0"),
             "module": "epcsaft/__init__.py",
@@ -601,13 +722,18 @@ def main() -> None:
                 "association.csv",
             )
         }
-        | {str(PREREGISTRATION.relative_to(ROOT)): _sha256(PREREGISTRATION)},
+        | {
+            str(PREREGISTRATION.relative_to(ROOT)): _sha256(PREREGISTRATION),
+            str(VLE_OBSERVATIONS.relative_to(ROOT)): _sha256(VLE_OBSERVATIONS),
+            str(PCO2_METROLOGY.relative_to(ROOT)): _sha256(PCO2_METROLOGY),
+        },
         "outputs": {
             name: _sha256(RESULTS / name)
             for name in (
                 "model_summary.csv",
                 "species_predictions.csv",
                 "loading_predictions.csv",
+                "pco2_loading_comparison.csv",
             )
         },
     }

@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 ROOT = Path(__file__).resolve().parents[4]
 ANALYSIS = ROOT / "analyses/phase3/m0_m3_model_comparison"
@@ -19,7 +18,6 @@ AMUNDSEN = (
 )
 COLORS = {"M0": "#4C78A8", "M1": "#F58518", "M2": "#54A24B", "M3": "#B279A2"}
 DISPLAY = {"M0": "M0", "M1": "M1", "M2": "M2", "M3": "M3 (bound-limited)"}
-TRACER_DISPLAY = {"M0": "M0", "M1": "M1", "M2": "M2", "M3": "M3*"}
 
 
 def _rows(path: Path) -> list[dict[str, str]]:
@@ -48,34 +46,54 @@ def _save(fig: plt.Figure, stem: str) -> None:
     plt.close(fig)
 
 
-def _tracer() -> None:
-    rows = _rows(RESULTS / "model_summary.csv")
-    labels = [row["model_id"] for row in rows]
-    x = np.arange(len(labels))
-    fig, axes = plt.subplots(1, 2, figsize=(8.3, 3.5))
-    axes[0].bar(
-        x,
-        [float(row["pco2_predicted_pa"]) for row in rows],
-        color=[COLORS[label] for label in labels],
-    )
-    axes[0].axhline(574.0, color="black", linestyle="--", label="observed")
-    axes[0].set_yscale("log")
-    axes[0].set_ylabel(r"$p_{CO_2}$ (Pa)")
-    axes[0].legend(frameon=False)
-    axes[1].bar(
-        x,
-        [float(row["meacoo_predicted_mole_fraction"]) for row in rows],
-        color=[COLORS[label] for label in labels],
-    )
-    axes[1].axhline(0.0502, color="black", linestyle="--", label="observed")
-    axes[1].set_ylabel(r"$x_{MEACOO^-}$")
-    for axis in axes:
-        axis.set_xticks(x, [TRACER_DISPLAY[label] for label in labels])
+def _pco2_loading() -> None:
+    rows = _rows(RESULTS / "pco2_loading_comparison.csv")
+    fig, axes = plt.subplots(2, 2, figsize=(8.3, 6.2), sharex=True, sharey=True)
+    for axis, model_id in zip(axes.flat, COLORS, strict=True):
+        selected = [row for row in rows if row["model_id"] == model_id]
+        loading = [float(row["loading"]) for row in selected]
+        observed = [float(row["observed_pco2_pa"]) / 1000.0 for row in selected]
+        predicted = [float(row["predicted_pco2_pa"]) / 1000.0 for row in selected]
+        axis.scatter(
+            loading,
+            observed,
+            facecolors="none",
+            edgecolors="black",
+            linewidths=1.0,
+            s=30,
+            label="Hilliard (2008)",
+        )
+        axis.scatter(
+            loading,
+            predicted,
+            color=COLORS[model_id],
+            marker="x",
+            s=30,
+            label="model",
+        )
+        axis.set_title(DISPLAY[model_id])
+        axis.set_yscale("log")
         axis.spines[["top", "right"]].set_visible(False)
-        axis.grid(axis="y", alpha=0.2)
-    fig.suptitle("Frozen 313.15 K, 30 wt% MEA, loading 0.466 tracer")
-    fig.text(0.99, 0.01, "* bound-limited diagnostic", ha="right", fontsize=9)
-    _save(fig, "m0_m3_tracer_comparison")
+        axis.grid(alpha=0.2, which="both")
+    for axis in axes[-1, :]:
+        axis.set_xlabel(r"loading (mol $CO_2$/mol MEA)")
+    for axis in axes[:, 0]:
+        axis.set_ylabel(r"$p_{CO_2}$ (kPa)")
+    handles, labels = axes[0, 0].get_legend_handles_labels()
+    fig.legend(
+        handles,
+        labels,
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.95),
+        ncol=2,
+        frameon=False,
+    )
+    fig.suptitle(
+        "313.15 K, 30 wt% MEA: observed and predicted $p_{CO_2}$",
+        y=0.995,
+    )
+    fig.subplots_adjust(top=0.85, hspace=0.28, wspace=0.16)
+    _save(fig, "m0_m3_pco2_loading_comparison")
 
 
 def _species() -> None:
@@ -148,7 +166,7 @@ def _density() -> None:
 
 
 def main() -> None:
-    _tracer()
+    _pco2_loading()
     _species()
     _density()
     receipt_path = RESULTS / "comparison_receipt.json"
@@ -159,6 +177,7 @@ def main() -> None:
             "model_summary.csv",
             "species_predictions.csv",
             "loading_predictions.csv",
+            "pco2_loading_comparison.csv",
         )
     }
     receipt["figure_outputs"] = {

@@ -2,19 +2,19 @@
   "analysis": "public ePC-SAFT Equilibrium replay",
   "claim_boundary": "A successful row establishes one certified local fixed-T,P homogeneous state only. It does not establish global equilibrium, parameter identifiability, predictive validity, or regression readiness.",
   "equilibrium_source": {
-    "commit": "9b7876d486f10d52b567a3e640ba98beafcb8fbe",
-    "tree": "cc040af3952e150914a9e112815f6b3ef42bb5bd"
+    "commit": "7f60cbc3619b2036ea4fbe0f5a3109d63703410c",
+    "tree": "cde90ff56439de1615f081ae9eb227abd5074189"
   },
   "installed_equilibrium": {
     "distribution": "epcsaft-equilibrium",
     "public_header_sha256": "408f1c09a098a19be868c7ffb9d74d28f840f7825c96ca96b2ecc6b1321d580a",
-    "record_sha256": "a07110a4dc6eb152fd20e912777aeac6d13326c9a5cbcafbfeda220c39bd91e9",
+    "record_sha256": "2713d8250239acfd31096b73d13c891abb006f2ebd898f5d43d8bbd5bcd7dda0",
     "version": "0.2.0.dev0"
   },
   "installed_provider": {
     "distribution": "epcsaft",
-    "public_header_sha256": "881f5ec87293de8b1f3c25c16018aa94be69775fede2ec5426fcbb08e257fecd",
-    "record_sha256": "70b410fa27c2cdd6112af946a8a376b7dd9dae8bd230b94b85f3f04f87977330",
+    "public_header_sha256": "d614191352c5e210317d0526a4621a6166557f2c9415c07e54f841f11db78fd0",
+    "record_sha256": "dcda4fb3d8a93244c337d8d42dba682f2423d351c9d5ca5d80cf6c9d622b6e88",
     "version": "0.2.0.dev0"
   },
   "model_order": [
@@ -28,172 +28,2198 @@
     "M5"
   ],
   "output_hashes": {
-    "equilibrium_replay_comparison.csv": "ad155b80f774e76036f7de77cfce79e763eb484714a6f59553a7aa59042989a5"
+    "equilibrium_replay_comparison.csv": "8dd15a3f310e9c18e8f8f6032a14c738dbb1d2551b0d3c696be5df886114b502"
   },
-  "overall_status": "BLOCKED_SHARED_PROVIDER_CAPABILITY",
+  "overall_status": "PARTIAL_LOCAL_EQUILIBRIUM_CERTIFICATION",
   "provider_source": {
-    "commit": "b2638deb64772f2353f0382d0dc5a3210889a827",
-    "tree": "bc597191c98eafb11a954f391c5e9f18184f8147"
+    "commit": "02104702e822e1f062bf829f0fe2280e801bbbc4",
+    "tree": "4cdd0ca9fa80415bacbe03fdd431eb6ea429fcfe"
   },
   "results": [
     {
-      "chemical_certification_level": "NOT_EVALUATED",
-      "elapsed_s": 0.0013903349754400551,
-      "equilibrium_predicted_pco2_pa": "",
+      "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+      "chemical_diagnostics": {
+        "active_constraint_bounds": [],
+        "active_lower_bounds": [],
+        "active_trace_species": [],
+        "active_upper_bounds": [],
+        "amounts_mol": [
+          1.0282050614954916e-07,
+          0.1730393734888534,
+          7.523510197588348,
+          0.7459862599134784,
+          0.08097436644855373,
+          0.1075656048333699,
+          0.2774599258975702,
+          3.950402862995145e-15,
+          0.0025264368364184223
+        ],
+        "balance_inf_norm": 8.609128785207249e-11,
+        "boundary_status": "strict_interior",
+        "callback_error": "",
+        "charge_inf_norm": 4.206704429243757e-17,
+        "chart_stationarity_inf_norm": 4.011901921785466e-12,
+        "chart_topology": "electroneutral_log_total+softmax_shares+neutral_log_amounts+log_packing_fraction",
+        "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+        "complementarity_inf_norm": 0.0,
+        "condition_number_inf": 135.60077525872165,
+        "constraint_jacobian_shape": [
+          3,
+          9
+        ],
+        "derivative_constraint_basis": "ordered_per_row_in_derivative_constraint_order",
+        "derivative_constraint_order": [
+          "balance_amount_mol:compiled_row=0",
+          "balance_amount_mol:compiled_row=1",
+          "balance_amount_mol:compiled_row=2"
+        ],
+        "derivative_coordinate_order": [
+          "log_charge_equivalents",
+          "cation_log_share_ratio:retained_species_index=3:reference_retained_species_index=7",
+          "anion_log_share_ratio:retained_species_index=4:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=5:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=6:reference_retained_species_index=8",
+          "log_amount_mol:retained_species_index=0",
+          "log_amount_mol:retained_species_index=1",
+          "log_amount_mol:retained_species_index=2",
+          "log_packing_fraction"
+        ],
+        "derivative_objective_basis": "dimensionless_fixed_TP_A_plus_PV_plus_reference_over_RT",
+        "failure_kind": "none",
+        "failure_reason": "",
+        "first_failed_numerical_criterion": null,
+        "first_failed_physical_criterion": null,
+        "globality_status": "not_guaranteed",
+        "kkt_dimension": 9,
+        "kkt_rank": 9,
+        "kkt_root_shape": [
+          9,
+          9
+        ],
+        "kkt_root_status": "interior_no_active_bounds",
+        "kkt_stationarity_inf_norm": 7.959854997352522e-11,
+        "lagrangian_hessian_shape": [
+          9,
+          9
+        ],
+        "local_minimum_status": "passed",
+        "minimum_amount_mol": 3.950402862995145e-15,
+        "negative_curvature_recovery_attempts": 0,
+        "negative_curvature_recovery_selected_sign": 0,
+        "negative_curvature_recovery_status": "not_needed",
+        "numerical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 8.609128785207249e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "complementarity_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "kkt_stationarity_inf_norm",
+            "status": "passed",
+            "value": 7.959854997352522e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "chart_stationarity_inf_norm",
+            "status": "passed",
+            "value": 4.011901921785466e-12
+          },
+          {
+            "comparison": ">=",
+            "limit": 1.0,
+            "name": "derivative_evidence_finite",
+            "status": "passed",
+            "value": 1.0
+          }
+        ],
+        "numerical_status": "passed",
+        "objective_gradient_shape": [
+          9
+        ],
+        "packing_fraction": 2.3879362496970937e-05,
+        "packing_fraction_max": 0.74,
+        "packing_fraction_min": 1e-06,
+        "physical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 8.609128785207249e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "charge_inf_norm",
+            "status": "passed",
+            "value": 4.206704429243757e-17
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-08,
+            "name": "pressure_relative_residual",
+            "status": "passed",
+            "value": 1.282307214614267e-13
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "reaction_affinity_inf_norm",
+            "status": "passed",
+            "value": 8.447067200952808e-11
+          },
+          {
+            "comparison": ">",
+            "limit": 1e-18,
+            "name": "minimum_amount_mol",
+            "status": "passed",
+            "value": 3.950402862995145e-15
+          },
+          {
+            "comparison": ">=",
+            "limit": 1e-06,
+            "name": "packing_fraction_lower_bound",
+            "status": "passed",
+            "value": 2.3879362496970937e-05
+          },
+          {
+            "comparison": "<=",
+            "limit": 0.74,
+            "name": "packing_fraction_upper_bound",
+            "status": "passed",
+            "value": 2.3879362496970937e-05
+          }
+        ],
+        "physical_stationarity_residuals": [
+          2.8478552849264815e-11,
+          2.3021584638627246e-12,
+          -5.877609510207549e-11,
+          -4.2525982735242e-12,
+          2.035704937952687e-12,
+          1.496758272878651e-11,
+          -4.572342504616245e-11,
+          9.759304475664976e-12,
+          7.959854997352522e-11
+        ],
+        "physical_status": "passed",
+        "predictive_status": "not_adjudicated",
+        "pressure_relative_residual": 1.282307214614267e-13,
+        "provider_domain_status": "passed",
+        "reaction_affinity_inf_norm": 8.447067200952808e-11,
+        "reaction_affinity_residuals": [
+          8.447067200952808e-11,
+          3.694822225952521e-11,
+          3.808509063674137e-12,
+          3.7474023883987684e-11,
+          4.307700967180498e-11
+        ],
+        "reduced_hessian_eigenvalue_tolerance": 1.0927524054506176e-09,
+        "reduced_hessian_eigenvalues": [
+          3.2932444557524816e-15,
+          1.028206218167513e-07,
+          0.0008502363833526882,
+          0.10176737045487684,
+          0.27241479484067077,
+          8.800024939455325
+        ],
+        "reduced_hessian_inertia": [
+          6,
+          0,
+          0
+        ],
+        "reduced_hessian_nullspace_shape": [
+          6,
+          9
+        ],
+        "reduced_hessian_raw_inertia": [
+          5,
+          1,
+          0
+        ],
+        "reduced_hessian_scale": 10.927524054506176,
+        "reduced_hessian_spectrum_status": "converged",
+        "reduced_hessian_status": "certified_local_minimum",
+        "reference_convergence_error": 4.741913011230281e-05,
+        "reference_derivative_availability": 0,
+        "reference_representation_residual_inf_norm": 2.331715893385721e-16,
+        "search": {
+          "basin_count": 3,
+          "continuation_status": "not_used",
+          "primary_attempt_count": 21,
+          "primary_budget": 25,
+          "selected_basin_ordinal": 1,
+          "selected_objective": -2045.7175216163907,
+          "selection_label": "lowest_observed_certified_local_value",
+          "status": "certified_local_minimum"
+        },
+        "solver_status": "solve_succeeded",
+        "structural_zero_species_indices": [],
+        "total_ion_fraction": null,
+        "total_ion_fraction_max": null,
+        "trace_floor_mol": 1e-18,
+        "trace_status": "interior",
+        "volume_m3": 3.142615460885166
+      },
+      "elapsed_s": 53.81689778598957,
+      "equilibrium_artifact_identity": {
+        "equilibrium_distribution": "epcsaft-equilibrium",
+        "equilibrium_record_sha256": "sha256:2713d8250239acfd31096b73d13c891abb006f2ebd898f5d43d8bbd5bcd7dda0",
+        "equilibrium_version": "0.2.0.dev0",
+        "provider_distribution": "epcsaft",
+        "provider_record_sha256": "sha256:dcda4fb3d8a93244c337d8d42dba682f2423d351c9d5ca5d80cf6c9d622b6e88",
+        "provider_sdk_abi_version": 1,
+        "provider_sdk_capsule_name": "epcsaft.native_sdk.v1",
+        "provider_sdk_mixture_result_size": 296,
+        "provider_sdk_neutral_reference_derivative_result_size": 968,
+        "provider_sdk_neutral_reference_result_size": 440,
+        "provider_sdk_reacting_phase_parameter_result_size": 600,
+        "provider_sdk_result_size": 376,
+        "provider_sdk_table_size": 472,
+        "provider_version": "0.2.0.dev0"
+      },
+      "equilibrium_mole_fractions": [
+        1.1538524034421454e-08,
+        0.019418489994577022,
+        0.8442888144493801,
+        0.08371462767203643,
+        0.009086948785096834,
+        0.012071019324119142,
+        0.03113657132655485,
+        4.433144718624463e-16,
+        0.0002835169097112005
+      ],
+      "equilibrium_predicted_pco2_pa": 0.00022869292006519643,
+      "failure_kind": "none",
+      "first_failed_numerical_criterion": "",
+      "first_failed_physical_criterion": "",
       "legacy_predicted_pco2_pa": 2594.1655239658025,
+      "ln_k_provider_basis": [
+        -616.6422280103257,
+        -601.062996146641,
+        -958.8602456746077,
+        -28.265990742662396,
+        -306.8996156879642
+      ],
       "loading_mol_co2_per_mol_mea": 0.466,
-      "local_minimum_status": "not_adjudicated",
-      "log10_equilibrium_over_legacy": "",
+      "local_minimum_status": "passed",
+      "log10_equilibrium_over_legacy": -7.054744963519559,
       "model_id": "M0",
-      "numerical_status": "not_adjudicated",
+      "numerical_status": "passed",
       "observation_id": "vle_obs_0137",
       "parameter_fingerprint": "sha256:7ac9cf016af9086a8f1c70189b524cbad1e29a75bb742862106d34ba7ab44ae0",
-      "physical_status": "not_adjudicated",
-      "provider_domain_status": "not_adjudicated",
-      "reason": "Provider neutral-reference ABI contract is incomplete",
-      "solver_status": "input_or_native_error",
+      "physical_status": "passed",
+      "reason": "",
+      "solver_status": "solve_succeeded",
       "state_pressure_pa": 7326.7,
-      "status": "BLOCKED_PROVIDER_NEUTRAL_REFERENCE_ABI",
+      "status": "CERTIFIED_LOCAL_EQUILIBRIUM",
       "temperature_k": 313.15
     },
     {
-      "chemical_certification_level": "NOT_EVALUATED",
-      "elapsed_s": 0.00020175898680463433,
-      "equilibrium_predicted_pco2_pa": "",
+      "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+      "chemical_diagnostics": {
+        "active_constraint_bounds": [],
+        "active_lower_bounds": [],
+        "active_trace_species": [],
+        "active_upper_bounds": [],
+        "amounts_mol": [
+          1.5531994149338217e-07,
+          0.1894446051100439,
+          7.53549557106475,
+          0.718013784463001,
+          0.09254161027606578,
+          0.12355265430977512,
+          0.24990558009421734,
+          6.415541169561451e-15,
+          0.002108359688731651
+        ],
+        "balance_inf_norm": 8.711600885114024e-11,
+        "boundary_status": "strict_interior",
+        "callback_error": "",
+        "charge_inf_norm": 1.7867651802561113e-16,
+        "chart_stationarity_inf_norm": 5.721515728674223e-11,
+        "chart_topology": "electroneutral_log_total+softmax_shares+neutral_log_amounts+log_packing_fraction",
+        "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+        "complementarity_inf_norm": 0.0,
+        "condition_number_inf": 125.00130041129388,
+        "constraint_jacobian_shape": [
+          3,
+          9
+        ],
+        "derivative_constraint_basis": "ordered_per_row_in_derivative_constraint_order",
+        "derivative_constraint_order": [
+          "balance_amount_mol:compiled_row=0",
+          "balance_amount_mol:compiled_row=1",
+          "balance_amount_mol:compiled_row=2"
+        ],
+        "derivative_coordinate_order": [
+          "log_charge_equivalents",
+          "cation_log_share_ratio:retained_species_index=3:reference_retained_species_index=7",
+          "anion_log_share_ratio:retained_species_index=4:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=5:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=6:reference_retained_species_index=8",
+          "log_amount_mol:retained_species_index=0",
+          "log_amount_mol:retained_species_index=1",
+          "log_amount_mol:retained_species_index=2",
+          "log_packing_fraction"
+        ],
+        "derivative_objective_basis": "dimensionless_fixed_TP_A_plus_PV_plus_reference_over_RT",
+        "failure_kind": "none",
+        "failure_reason": "",
+        "first_failed_numerical_criterion": null,
+        "first_failed_physical_criterion": null,
+        "globality_status": "not_guaranteed",
+        "kkt_dimension": 9,
+        "kkt_rank": 9,
+        "kkt_root_shape": [
+          9,
+          9
+        ],
+        "kkt_root_status": "interior_no_active_bounds",
+        "kkt_stationarity_inf_norm": 7.849010330573947e-11,
+        "lagrangian_hessian_shape": [
+          9,
+          9
+        ],
+        "local_minimum_status": "passed",
+        "minimum_amount_mol": 6.415541169561451e-15,
+        "negative_curvature_recovery_attempts": 0,
+        "negative_curvature_recovery_selected_sign": 0,
+        "negative_curvature_recovery_status": "not_needed",
+        "numerical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 8.711600885114024e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "complementarity_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "kkt_stationarity_inf_norm",
+            "status": "passed",
+            "value": 7.849010330573947e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "chart_stationarity_inf_norm",
+            "status": "passed",
+            "value": 5.721515728674223e-11
+          },
+          {
+            "comparison": ">=",
+            "limit": 1.0,
+            "name": "derivative_evidence_finite",
+            "status": "passed",
+            "value": 1.0
+          }
+        ],
+        "numerical_status": "passed",
+        "objective_gradient_shape": [
+          9
+        ],
+        "packing_fraction": 2.3299159678006225e-05,
+        "packing_fraction_max": 0.74,
+        "packing_fraction_min": 1e-06,
+        "physical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 8.711600885114024e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "charge_inf_norm",
+            "status": "passed",
+            "value": 1.7867651802561113e-16
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-08,
+            "name": "pressure_relative_residual",
+            "status": "passed",
+            "value": 6.467644772103827e-12
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "reaction_affinity_inf_norm",
+            "status": "passed",
+            "value": 8.307829829508532e-11
+          },
+          {
+            "comparison": ">",
+            "limit": 1e-18,
+            "name": "minimum_amount_mol",
+            "status": "passed",
+            "value": 6.415541169561451e-15
+          },
+          {
+            "comparison": ">=",
+            "limit": 1e-06,
+            "name": "packing_fraction_lower_bound",
+            "status": "passed",
+            "value": 2.3299159678006225e-05
+          },
+          {
+            "comparison": "<=",
+            "limit": 0.74,
+            "name": "packing_fraction_upper_bound",
+            "status": "passed",
+            "value": 2.3299159678006225e-05
+          }
+        ],
+        "physical_stationarity_residuals": [
+          2.5920599000528455e-11,
+          2.2737367544323206e-13,
+          -5.803713065688498e-11,
+          -3.1725733151688473e-12,
+          3.5136338283336954e-12,
+          1.8122392475561355e-11,
+          -4.703082367996103e-11,
+          8.93507490218326e-12,
+          7.849010330573947e-11
+        ],
+        "physical_status": "passed",
+        "predictive_status": "not_adjudicated",
+        "pressure_relative_residual": 6.467644772103827e-12,
+        "provider_domain_status": "passed",
+        "reaction_affinity_inf_norm": 8.307829829508532e-11,
+        "reaction_affinity_residuals": [
+          8.307829829508532e-11,
+          3.646505319920834e-11,
+          8.526512829121202e-13,
+          3.515765456540976e-11,
+          4.4301642864469756e-11
+        ],
+        "reduced_hessian_eigenvalue_tolerance": 1.0168356609248356e-09,
+        "reduced_hessian_eigenvalues": [
+          7.431223014315817e-15,
+          1.553201817188569e-07,
+          0.0007072883908354982,
+          0.11617462327303228,
+          0.29155871970163555,
+          8.807852325933245
+        ],
+        "reduced_hessian_inertia": [
+          6,
+          0,
+          0
+        ],
+        "reduced_hessian_nullspace_shape": [
+          6,
+          9
+        ],
+        "reduced_hessian_raw_inertia": [
+          5,
+          1,
+          0
+        ],
+        "reduced_hessian_scale": 10.168356609248356,
+        "reduced_hessian_spectrum_status": "converged",
+        "reduced_hessian_status": "certified_local_minimum",
+        "reference_convergence_error": 4.7419055533737264e-05,
+        "reference_derivative_availability": 0,
+        "reference_representation_residual_inf_norm": 2.331715893385721e-16,
+        "search": {
+          "basin_count": 3,
+          "continuation_status": "not_used",
+          "primary_attempt_count": 21,
+          "primary_budget": 25,
+          "selected_basin_ordinal": 1,
+          "selected_objective": -2045.8271184216387,
+          "selection_label": "lowest_observed_certified_local_value",
+          "status": "certified_local_minimum"
+        },
+        "solver_status": "solve_succeeded",
+        "structural_zero_species_indices": [],
+        "total_ion_fraction": null,
+        "total_ion_fraction_max": null,
+        "trace_floor_mol": 1e-18,
+        "trace_status": "interior",
+        "volume_m3": 3.143747999567086
+      },
+      "elapsed_s": 54.86127264998504,
+      "equilibrium_artifact_identity": {
+        "equilibrium_distribution": "epcsaft-equilibrium",
+        "equilibrium_record_sha256": "sha256:2713d8250239acfd31096b73d13c891abb006f2ebd898f5d43d8bbd5bcd7dda0",
+        "equilibrium_version": "0.2.0.dev0",
+        "provider_distribution": "epcsaft",
+        "provider_record_sha256": "sha256:dcda4fb3d8a93244c337d8d42dba682f2423d351c9d5ca5d80cf6c9d622b6e88",
+        "provider_sdk_abi_version": 1,
+        "provider_sdk_capsule_name": "epcsaft.native_sdk.v1",
+        "provider_sdk_mixture_result_size": 296,
+        "provider_sdk_neutral_reference_derivative_result_size": 968,
+        "provider_sdk_neutral_reference_result_size": 440,
+        "provider_sdk_reacting_phase_parameter_result_size": 600,
+        "provider_sdk_result_size": 376,
+        "provider_sdk_table_size": 472,
+        "provider_version": "0.2.0.dev0"
+      },
+      "equilibrium_mole_fractions": [
+        1.743001405557342e-08,
+        0.021259486052287196,
+        0.8456338088755082,
+        0.08057555414298691,
+        0.010385025595093664,
+        0.013865086997309622,
+        0.028044420643784693,
+        7.199524522376321e-16,
+        0.0002366002630149256
+      ],
+      "equilibrium_predicted_pco2_pa": 0.00031460794672775436,
+      "failure_kind": "none",
+      "first_failed_numerical_criterion": "",
+      "first_failed_physical_criterion": "",
       "legacy_predicted_pco2_pa": 1779.7038768954483,
+      "ln_k_provider_basis": [
+        -616.6422280103257,
+        -601.062996146641,
+        -958.8602456746077,
+        -28.265990742662396,
+        -306.4094029829932
+      ],
       "loading_mol_co2_per_mol_mea": 0.466,
-      "local_minimum_status": "not_adjudicated",
-      "log10_equilibrium_over_legacy": "",
+      "local_minimum_status": "passed",
+      "log10_equilibrium_over_legacy": -6.752578058173036,
       "model_id": "M1",
-      "numerical_status": "not_adjudicated",
+      "numerical_status": "passed",
       "observation_id": "vle_obs_0137",
       "parameter_fingerprint": "sha256:a9cb660cbdafb60d0ae850ed0246012860d3f8b5cad3ec5ee4f6a3d351c0b0ed",
-      "physical_status": "not_adjudicated",
-      "provider_domain_status": "not_adjudicated",
-      "reason": "Provider neutral-reference ABI contract is incomplete",
-      "solver_status": "input_or_native_error",
+      "physical_status": "passed",
+      "reason": "",
+      "solver_status": "solve_succeeded",
       "state_pressure_pa": 7326.7,
-      "status": "BLOCKED_PROVIDER_NEUTRAL_REFERENCE_ABI",
+      "status": "CERTIFIED_LOCAL_EQUILIBRIUM",
       "temperature_k": 313.15
     },
     {
-      "chemical_certification_level": "NOT_EVALUATED",
-      "elapsed_s": 0.00017634901450946927,
+      "chemical_certification_level": "FEASIBLE_ONLY",
+      "chemical_diagnostics": {
+        "active_constraint_bounds": [],
+        "active_lower_bounds": [],
+        "active_trace_species": [],
+        "active_upper_bounds": [],
+        "amounts_mol": [],
+        "balance_inf_norm": 0.0,
+        "boundary_status": "not_adjudicated",
+        "callback_error": "Provider start pressure bisection did not converge",
+        "charge_inf_norm": 0.0,
+        "chart_stationarity_inf_norm": null,
+        "chart_topology": "",
+        "chemical_certification_level": "FEASIBLE_ONLY",
+        "complementarity_inf_norm": 0.0,
+        "condition_number_inf": null,
+        "constraint_jacobian_shape": [
+          0,
+          0
+        ],
+        "derivative_constraint_basis": "ordered_per_row_in_derivative_constraint_order",
+        "derivative_constraint_order": [],
+        "derivative_coordinate_order": [],
+        "derivative_objective_basis": "dimensionless_fixed_TP_A_plus_PV_plus_reference_over_RT",
+        "failure_kind": "physical_domain_failure",
+        "failure_reason": "physical_domain_failure: first failed physical criterion=trace_status; search status=domain_rejected",
+        "first_failed_numerical_criterion": "chart_stationarity_inf_norm",
+        "first_failed_physical_criterion": null,
+        "globality_status": "not_guaranteed",
+        "kkt_dimension": 0,
+        "kkt_rank": 0,
+        "kkt_root_shape": [
+          0,
+          0
+        ],
+        "kkt_root_status": "not_evaluated",
+        "kkt_stationarity_inf_norm": 0.0,
+        "lagrangian_hessian_shape": [
+          0,
+          0
+        ],
+        "local_minimum_status": "not_adjudicated",
+        "minimum_amount_mol": null,
+        "negative_curvature_recovery_attempts": 0,
+        "negative_curvature_recovery_selected_sign": 0,
+        "negative_curvature_recovery_status": "not_needed",
+        "numerical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "complementarity_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "kkt_stationarity_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "chart_stationarity_inf_norm",
+            "status": "failed",
+            "value": NaN
+          },
+          {
+            "comparison": ">=",
+            "limit": 1.0,
+            "name": "derivative_evidence_finite",
+            "status": "failed",
+            "value": 0.0
+          }
+        ],
+        "numerical_status": "failed",
+        "objective_gradient_shape": [
+          0
+        ],
+        "packing_fraction": 0.0,
+        "packing_fraction_max": null,
+        "packing_fraction_min": null,
+        "physical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "charge_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-08,
+            "name": "pressure_relative_residual",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "reaction_affinity_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          }
+        ],
+        "physical_stationarity_residuals": [],
+        "physical_status": "not_adjudicated",
+        "predictive_status": "not_adjudicated",
+        "pressure_relative_residual": 0.0,
+        "provider_domain_status": "failed",
+        "reaction_affinity_inf_norm": 0.0,
+        "reaction_affinity_residuals": [],
+        "reduced_hessian_eigenvalue_tolerance": null,
+        "reduced_hessian_eigenvalues": [],
+        "reduced_hessian_inertia": [
+          0,
+          0,
+          0
+        ],
+        "reduced_hessian_nullspace_shape": [
+          0,
+          0
+        ],
+        "reduced_hessian_raw_inertia": [
+          0,
+          0,
+          0
+        ],
+        "reduced_hessian_scale": null,
+        "reduced_hessian_spectrum_status": "not_adjudicated",
+        "reduced_hessian_status": "not_adjudicated",
+        "reference_convergence_error": 4.749249947622047e-05,
+        "reference_derivative_availability": 0,
+        "reference_representation_residual_inf_norm": 2.331715893385721e-16,
+        "search": {
+          "basin_count": 0,
+          "continuation_status": "not_used",
+          "primary_attempt_count": 1,
+          "primary_budget": 25,
+          "selected_basin_ordinal": null,
+          "selected_objective": null,
+          "selection_label": "lowest_observed_certified_local_value",
+          "status": "domain_rejected"
+        },
+        "solver_status": "start_rejected",
+        "structural_zero_species_indices": [],
+        "total_ion_fraction": null,
+        "total_ion_fraction_max": null,
+        "trace_floor_mol": null,
+        "trace_status": "not_adjudicated",
+        "volume_m3": 0.0
+      },
+      "elapsed_s": 40.51455174700823,
       "equilibrium_predicted_pco2_pa": "",
+      "failure_kind": "physical_domain_failure",
+      "first_failed_numerical_criterion": "chart_stationarity_inf_norm",
+      "first_failed_physical_criterion": "",
       "legacy_predicted_pco2_pa": 1420.0568398418698,
       "loading_mol_co2_per_mol_mea": 0.466,
       "local_minimum_status": "not_adjudicated",
       "log10_equilibrium_over_legacy": "",
       "model_id": "M2",
-      "numerical_status": "not_adjudicated",
+      "numerical_status": "failed",
       "observation_id": "vle_obs_0137",
       "parameter_fingerprint": "sha256:8a08dd659a09f1dd2eed3430ca697af2b02066a9962db1ae6527c5148eab598e",
       "physical_status": "not_adjudicated",
-      "provider_domain_status": "not_adjudicated",
-      "reason": "Provider neutral-reference ABI contract is incomplete",
-      "solver_status": "input_or_native_error",
+      "provider_domain_status": "failed",
+      "reason": "physical_domain_failure: first failed physical criterion=trace_status; search status=domain_rejected",
+      "solver_status": "start_rejected",
       "state_pressure_pa": 7326.7,
-      "status": "BLOCKED_PROVIDER_NEUTRAL_REFERENCE_ABI",
+      "status": "NOT_ADMITTED_PHYSICAL_DOMAIN_FAILURE",
       "temperature_k": 313.15
     },
     {
-      "chemical_certification_level": "NOT_EVALUATED",
-      "elapsed_s": 0.0001729789946693927,
-      "equilibrium_predicted_pco2_pa": "",
+      "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+      "chemical_diagnostics": {
+        "active_constraint_bounds": [],
+        "active_lower_bounds": [],
+        "active_trace_species": [],
+        "active_upper_bounds": [],
+        "amounts_mol": [
+          1.6356465935954695e-08,
+          0.09455982729385534,
+          7.725019343284869,
+          0.6192767469445954,
+          0.28616342563143593,
+          0.032766058550750043,
+          0.14707049946134867,
+          1.2767604973119876e-14,
+          0.006206263839724954
+        ],
+        "balance_inf_norm": 7.512093724848512e-11,
+        "boundary_status": "strict_interior",
+        "callback_error": "",
+        "charge_inf_norm": 6.331740687315346e-17,
+        "chart_stationarity_inf_norm": 4.359179683888215e-12,
+        "chart_topology": "electroneutral_log_total+softmax_shares+neutral_log_amounts+log_packing_fraction",
+        "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+        "complementarity_inf_norm": 0.0,
+        "condition_number_inf": 332.3242095917976,
+        "constraint_jacobian_shape": [
+          3,
+          9
+        ],
+        "derivative_constraint_basis": "ordered_per_row_in_derivative_constraint_order",
+        "derivative_constraint_order": [
+          "balance_amount_mol:compiled_row=0",
+          "balance_amount_mol:compiled_row=1",
+          "balance_amount_mol:compiled_row=2"
+        ],
+        "derivative_coordinate_order": [
+          "log_charge_equivalents",
+          "cation_log_share_ratio:retained_species_index=3:reference_retained_species_index=7",
+          "anion_log_share_ratio:retained_species_index=4:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=5:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=6:reference_retained_species_index=8",
+          "log_amount_mol:retained_species_index=0",
+          "log_amount_mol:retained_species_index=1",
+          "log_amount_mol:retained_species_index=2",
+          "log_packing_fraction"
+        ],
+        "derivative_objective_basis": "dimensionless_fixed_TP_A_plus_PV_plus_reference_over_RT",
+        "failure_kind": "none",
+        "failure_reason": "",
+        "first_failed_numerical_criterion": null,
+        "first_failed_physical_criterion": null,
+        "globality_status": "not_guaranteed",
+        "kkt_dimension": 9,
+        "kkt_rank": 9,
+        "kkt_root_shape": [
+          9,
+          9
+        ],
+        "kkt_root_status": "interior_no_active_bounds",
+        "kkt_stationarity_inf_norm": 6.002665031701326e-11,
+        "lagrangian_hessian_shape": [
+          9,
+          9
+        ],
+        "local_minimum_status": "passed",
+        "minimum_amount_mol": 1.2767604973119876e-14,
+        "negative_curvature_recovery_attempts": 0,
+        "negative_curvature_recovery_selected_sign": 0,
+        "negative_curvature_recovery_status": "not_needed",
+        "numerical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 7.512093724848512e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "complementarity_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "kkt_stationarity_inf_norm",
+            "status": "passed",
+            "value": 6.002665031701326e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "chart_stationarity_inf_norm",
+            "status": "passed",
+            "value": 4.359179683888215e-12
+          },
+          {
+            "comparison": ">=",
+            "limit": 1.0,
+            "name": "derivative_evidence_finite",
+            "status": "passed",
+            "value": 1.0
+          }
+        ],
+        "numerical_status": "passed",
+        "objective_gradient_shape": [
+          9
+        ],
+        "packing_fraction": 2.2939401213792595e-05,
+        "packing_fraction_max": 0.74,
+        "packing_fraction_min": 1e-06,
+        "physical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 7.512093724848512e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "charge_inf_norm",
+            "status": "passed",
+            "value": 6.331740687315346e-17
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-08,
+            "name": "pressure_relative_residual",
+            "status": "passed",
+            "value": 3.117012019260817e-13
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "reaction_affinity_inf_norm",
+            "status": "passed",
+            "value": 4.8965142291237434e-11
+          },
+          {
+            "comparison": ">",
+            "limit": 1e-18,
+            "name": "minimum_amount_mol",
+            "status": "passed",
+            "value": 1.2767604973119876e-14
+          },
+          {
+            "comparison": ">=",
+            "limit": 1e-06,
+            "name": "packing_fraction_lower_bound",
+            "status": "passed",
+            "value": 2.2939401213792595e-05
+          },
+          {
+            "comparison": "<=",
+            "limit": 0.74,
+            "name": "packing_fraction_upper_bound",
+            "status": "passed",
+            "value": 2.2939401213792595e-05
+          }
+        ],
+        "physical_stationarity_residuals": [
+          2.3987922759260982e-11,
+          9.350742402602918e-12,
+          -3.0524915928253904e-11,
+          -1.3642420526593924e-11,
+          4.263256414560601e-12,
+          2.276578925375361e-11,
+          -5.0818016461562365e-11,
+          -1.1368683772161603e-12,
+          6.002665031701326e-11
+        ],
+        "physical_status": "passed",
+        "predictive_status": "not_adjudicated",
+        "pressure_relative_residual": 3.117012019260817e-13,
+        "provider_domain_status": "passed",
+        "reaction_affinity_inf_norm": 4.8965142291237434e-11,
+        "reaction_affinity_residuals": [
+          4.8965142291237434e-11,
+          2.913225216616411e-11,
+          -2.2183144210430328e-11,
+          2.609112925711088e-11,
+          2.2226018207223066e-11
+        ],
+        "reduced_hessian_eigenvalue_tolerance": 9.444914010425914e-10,
+        "reduced_hessian_eigenvalues": [
+          1.2233132248568323e-14,
+          1.6356473560311586e-08,
+          0.0021804559923153505,
+          0.05105731648887542,
+          0.3829507472983656,
+          8.81910731764077
+        ],
+        "reduced_hessian_inertia": [
+          6,
+          0,
+          0
+        ],
+        "reduced_hessian_nullspace_shape": [
+          6,
+          9
+        ],
+        "reduced_hessian_raw_inertia": [
+          5,
+          1,
+          0
+        ],
+        "reduced_hessian_scale": 9.444914010425913,
+        "reduced_hessian_spectrum_status": "converged",
+        "reduced_hessian_status": "certified_local_minimum",
+        "reference_convergence_error": 4.7492593722608945e-05,
+        "reference_derivative_availability": 0,
+        "reference_representation_residual_inf_norm": 2.331715893385721e-16,
+        "search": {
+          "basin_count": 4,
+          "continuation_status": "not_used",
+          "primary_attempt_count": 21,
+          "primary_budget": 25,
+          "selected_basin_ordinal": 2,
+          "selected_objective": -2047.481068577885,
+          "selection_label": "lowest_observed_certified_local_value",
+          "status": "certified_local_minimum"
+        },
+        "solver_status": "solve_succeeded",
+        "structural_zero_species_indices": [],
+        "total_ion_fraction": null,
+        "total_ion_fraction_max": null,
+        "trace_floor_mol": 1e-18,
+        "trace_status": "interior",
+        "volume_m3": 3.148075965226139
+      },
+      "elapsed_s": 126.4361513449985,
+      "equilibrium_artifact_identity": {
+        "equilibrium_distribution": "epcsaft-equilibrium",
+        "equilibrium_record_sha256": "sha256:2713d8250239acfd31096b73d13c891abb006f2ebd898f5d43d8bbd5bcd7dda0",
+        "equilibrium_version": "0.2.0.dev0",
+        "provider_distribution": "epcsaft",
+        "provider_record_sha256": "sha256:dcda4fb3d8a93244c337d8d42dba682f2423d351c9d5ca5d80cf6c9d622b6e88",
+        "provider_sdk_abi_version": 1,
+        "provider_sdk_capsule_name": "epcsaft.native_sdk.v1",
+        "provider_sdk_mixture_result_size": 296,
+        "provider_sdk_neutral_reference_derivative_result_size": 968,
+        "provider_sdk_neutral_reference_result_size": 440,
+        "provider_sdk_reacting_phase_parameter_result_size": 600,
+        "provider_sdk_result_size": 376,
+        "provider_sdk_table_size": 472,
+        "provider_version": "0.2.0.dev0"
+      },
+      "equilibrium_mole_fractions": [
+        1.8355237123317627e-09,
+        0.010611510207124517,
+        0.8669021925849957,
+        0.06949527837879697,
+        0.03211327895679252,
+        0.0036770093041521195,
+        0.016504261385240655,
+        1.4327814926286276e-15,
+        0.0006964673473724575
+      ],
+      "equilibrium_predicted_pco2_pa": 2.426868023915198e-05,
+      "failure_kind": "none",
+      "first_failed_numerical_criterion": "",
+      "first_failed_physical_criterion": "",
       "legacy_predicted_pco2_pa": 574.1424686527057,
+      "ln_k_provider_basis": [
+        -616.412343125847,
+        -600.6806977220258,
+        -958.7579717435983,
+        -31.74977706349746,
+        -306.7533834468643
+      ],
       "loading_mol_co2_per_mol_mea": 0.466,
-      "local_minimum_status": "not_adjudicated",
-      "log10_equilibrium_over_legacy": "",
+      "local_minimum_status": "passed",
+      "log10_equilibrium_over_legacy": -7.3739735128120465,
       "model_id": "M3",
-      "numerical_status": "not_adjudicated",
+      "numerical_status": "passed",
       "observation_id": "vle_obs_0137",
       "parameter_fingerprint": "sha256:b12a7472480b2733ab0e19ce6d1bd87492abb88bfddb44b273db152e3cf6d9a9",
-      "physical_status": "not_adjudicated",
-      "provider_domain_status": "not_adjudicated",
-      "reason": "Provider neutral-reference ABI contract is incomplete",
-      "solver_status": "input_or_native_error",
+      "physical_status": "passed",
+      "reason": "",
+      "solver_status": "solve_succeeded",
       "state_pressure_pa": 7326.7,
-      "status": "BLOCKED_PROVIDER_NEUTRAL_REFERENCE_ABI",
+      "status": "CERTIFIED_LOCAL_EQUILIBRIUM",
       "temperature_k": 313.15
     },
     {
-      "chemical_certification_level": "NOT_EVALUATED",
-      "elapsed_s": 0.00016246901941485703,
-      "equilibrium_predicted_pco2_pa": "",
+      "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+      "chemical_diagnostics": {
+        "active_constraint_bounds": [],
+        "active_lower_bounds": [],
+        "active_trace_species": [],
+        "active_upper_bounds": [],
+        "amounts_mol": [
+          8.112204802802259e-09,
+          0.10622282906520131,
+          7.46457569394699,
+          0.8667346160505407,
+          0.02704255474196459,
+          0.045751847039152214,
+          0.3932055901066785,
+          4.720784152776908e-16,
+          0.007529034056067388
+        ],
+        "balance_inf_norm": 8.215313638763195e-11,
+        "boundary_status": "strict_interior",
+        "callback_error": "",
+        "charge_inf_norm": 5.2909066017292616e-17,
+        "chart_stationarity_inf_norm": 2.2852830738884222e-12,
+        "chart_topology": "electroneutral_log_total+softmax_shares+neutral_log_amounts+log_packing_fraction",
+        "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+        "complementarity_inf_norm": 0.0,
+        "condition_number_inf": 209.68248290243528,
+        "constraint_jacobian_shape": [
+          3,
+          9
+        ],
+        "derivative_constraint_basis": "ordered_per_row_in_derivative_constraint_order",
+        "derivative_constraint_order": [
+          "balance_amount_mol:compiled_row=0",
+          "balance_amount_mol:compiled_row=1",
+          "balance_amount_mol:compiled_row=2"
+        ],
+        "derivative_coordinate_order": [
+          "log_charge_equivalents",
+          "cation_log_share_ratio:retained_species_index=3:reference_retained_species_index=7",
+          "anion_log_share_ratio:retained_species_index=4:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=5:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=6:reference_retained_species_index=8",
+          "log_amount_mol:retained_species_index=0",
+          "log_amount_mol:retained_species_index=1",
+          "log_amount_mol:retained_species_index=2",
+          "log_packing_fraction"
+        ],
+        "derivative_objective_basis": "dimensionless_fixed_TP_A_plus_PV_plus_reference_over_RT",
+        "failure_kind": "none",
+        "failure_reason": "",
+        "first_failed_numerical_criterion": null,
+        "first_failed_physical_criterion": null,
+        "globality_status": "not_guaranteed",
+        "kkt_dimension": 9,
+        "kkt_rank": 9,
+        "kkt_root_shape": [
+          9,
+          9
+        ],
+        "kkt_root_status": "interior_no_active_bounds",
+        "kkt_stationarity_inf_norm": 7.883471653258312e-11,
+        "lagrangian_hessian_shape": [
+          9,
+          9
+        ],
+        "local_minimum_status": "passed",
+        "minimum_amount_mol": 4.720784152776908e-16,
+        "negative_curvature_recovery_attempts": 0,
+        "negative_curvature_recovery_selected_sign": 0,
+        "negative_curvature_recovery_status": "not_needed",
+        "numerical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 8.215313638763195e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "complementarity_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "kkt_stationarity_inf_norm",
+            "status": "passed",
+            "value": 7.883471653258312e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "chart_stationarity_inf_norm",
+            "status": "passed",
+            "value": 2.2852830738884222e-12
+          },
+          {
+            "comparison": ">=",
+            "limit": 1.0,
+            "name": "derivative_evidence_finite",
+            "status": "passed",
+            "value": 1.0
+          }
+        ],
+        "numerical_status": "passed",
+        "objective_gradient_shape": [
+          9
+        ],
+        "packing_fraction": 2.33225304652303e-05,
+        "packing_fraction_max": 0.74,
+        "packing_fraction_min": 1e-06,
+        "physical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 8.215313638763195e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "charge_inf_norm",
+            "status": "passed",
+            "value": 5.2909066017292616e-17
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-08,
+            "name": "pressure_relative_residual",
+            "status": "passed",
+            "value": 1.7540175162148684e-13
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "reaction_affinity_inf_norm",
+            "status": "passed",
+            "value": 8.831130283853273e-11
+          },
+          {
+            "comparison": ">",
+            "limit": 1e-18,
+            "name": "minimum_amount_mol",
+            "status": "passed",
+            "value": 4.720784152776908e-16
+          },
+          {
+            "comparison": ">=",
+            "limit": 1e-06,
+            "name": "packing_fraction_lower_bound",
+            "status": "passed",
+            "value": 2.33225304652303e-05
+          },
+          {
+            "comparison": "<=",
+            "limit": 0.74,
+            "name": "packing_fraction_upper_bound",
+            "status": "passed",
+            "value": 2.33225304652303e-05
+          }
+        ],
+        "physical_stationarity_residuals": [
+          3.200284481863491e-11,
+          8.72546479513403e-12,
+          -6.298250809777528e-11,
+          -3.801403636316536e-12,
+          -4.554578936222242e-12,
+          1.2185807918285718e-11,
+          -3.9406700125255156e-11,
+          1.148947603724082e-11,
+          7.883471653258312e-11
+        ],
+        "physical_status": "passed",
+        "predictive_status": "not_adjudicated",
+        "pressure_relative_residual": 1.7540175162148684e-13,
+        "provider_domain_status": "passed",
+        "reaction_affinity_inf_norm": 8.831130283853273e-11,
+        "reaction_affinity_residuals": [
+          8.831130283853273e-11,
+          4.416733645484783e-11,
+          1.1326051208015997e-11,
+          4.345679371908773e-11,
+          4.452723318943432e-11
+        ],
+        "reduced_hessian_eigenvalue_tolerance": 1.309435478192612e-09,
+        "reduced_hessian_eigenvalues": [
+          2.6545671507152572e-15,
+          8.112206117951356e-09,
+          0.00266341258451317,
+          0.036783408862208496,
+          0.11946412427428442,
+          8.77473323739642
+        ],
+        "reduced_hessian_inertia": [
+          6,
+          0,
+          0
+        ],
+        "reduced_hessian_nullspace_shape": [
+          6,
+          9
+        ],
+        "reduced_hessian_raw_inertia": [
+          5,
+          1,
+          0
+        ],
+        "reduced_hessian_scale": 13.09435478192612,
+        "reduced_hessian_spectrum_status": "converged",
+        "reduced_hessian_status": "certified_local_minimum",
+        "reference_convergence_error": 4.749251510816066e-05,
+        "reference_derivative_availability": 0,
+        "reference_representation_residual_inf_norm": 2.331715893385721e-16,
+        "search": {
+          "basin_count": 3,
+          "continuation_status": "not_used",
+          "primary_attempt_count": 21,
+          "primary_budget": 25,
+          "selected_basin_ordinal": 2,
+          "selected_objective": -2044.6091868093733,
+          "selection_label": "lowest_observed_certified_local_value",
+          "status": "certified_local_minimum"
+        },
+        "solver_status": "solve_succeeded",
+        "structural_zero_species_indices": [],
+        "total_ion_fraction": null,
+        "total_ion_fraction_max": null,
+        "trace_floor_mol": 1e-18,
+        "trace_status": "interior",
+        "volume_m3": 3.137163705750928
+      },
+      "elapsed_s": 86.22916517700651,
+      "equilibrium_artifact_identity": {
+        "equilibrium_distribution": "epcsaft-equilibrium",
+        "equilibrium_record_sha256": "sha256:2713d8250239acfd31096b73d13c891abb006f2ebd898f5d43d8bbd5bcd7dda0",
+        "equilibrium_version": "0.2.0.dev0",
+        "provider_distribution": "epcsaft",
+        "provider_record_sha256": "sha256:dcda4fb3d8a93244c337d8d42dba682f2423d351c9d5ca5d80cf6c9d622b6e88",
+        "provider_sdk_abi_version": 1,
+        "provider_sdk_capsule_name": "epcsaft.native_sdk.v1",
+        "provider_sdk_mixture_result_size": 296,
+        "provider_sdk_neutral_reference_derivative_result_size": 968,
+        "provider_sdk_neutral_reference_result_size": 440,
+        "provider_sdk_reacting_phase_parameter_result_size": 600,
+        "provider_sdk_result_size": 376,
+        "provider_sdk_table_size": 472,
+        "provider_version": "0.2.0.dev0"
+      },
+      "equilibrium_mole_fractions": [
+        9.103521718514789e-10,
+        0.011920333064854396,
+        0.8376751894364179,
+        0.09726501725744222,
+        0.003034717322873297,
+        0.005134275370355702,
+        0.04412555792650919,
+        5.297667170382531e-17,
+        0.0008449087111948952
+      ],
+      "equilibrium_predicted_pco2_pa": 2.8087911174473093e-05,
+      "failure_kind": "none",
+      "first_failed_numerical_criterion": "",
+      "first_failed_physical_criterion": "",
       "legacy_predicted_pco2_pa": 1054.708396244412,
+      "ln_k_provider_basis": [
+        -616.412343125847,
+        -600.6806977220258,
+        -958.7579717435983,
+        -28.057845667600375,
+        -309.08795510756744
+      ],
       "loading_mol_co2_per_mol_mea": 0.466,
-      "local_minimum_status": "not_adjudicated",
-      "log10_equilibrium_over_legacy": "",
+      "local_minimum_status": "passed",
+      "log10_equilibrium_over_legacy": -7.574612960281872,
       "model_id": "M4A",
-      "numerical_status": "not_adjudicated",
+      "numerical_status": "passed",
       "observation_id": "vle_obs_0137",
       "parameter_fingerprint": "sha256:d1466944f683c62376aeb832a01f0d2ddd782ebbf836e11d656195242fece977",
-      "physical_status": "not_adjudicated",
-      "provider_domain_status": "not_adjudicated",
-      "reason": "Provider neutral-reference ABI contract is incomplete",
-      "solver_status": "input_or_native_error",
+      "physical_status": "passed",
+      "reason": "",
+      "solver_status": "solve_succeeded",
       "state_pressure_pa": 7326.7,
-      "status": "BLOCKED_PROVIDER_NEUTRAL_REFERENCE_ABI",
+      "status": "CERTIFIED_LOCAL_EQUILIBRIUM",
       "temperature_k": 313.15
     },
     {
-      "chemical_certification_level": "NOT_EVALUATED",
-      "elapsed_s": 0.0001644889998715371,
-      "equilibrium_predicted_pco2_pa": "",
+      "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+      "chemical_diagnostics": {
+        "active_constraint_bounds": [],
+        "active_lower_bounds": [],
+        "active_trace_species": [],
+        "active_upper_bounds": [],
+        "amounts_mol": [
+          3.332152224419999e-07,
+          0.2406191230113727,
+          7.552190344059986,
+          0.6507863567030772,
+          0.10859452009324662,
+          0.17408513122056157,
+          0.1833200154709694,
+          2.376098246523327e-14,
+          0.0014666744473538038
+        ],
+        "balance_inf_norm": 1.110265052532987e-10,
+        "boundary_status": "strict_interior",
+        "callback_error": "",
+        "charge_inf_norm": 7.567731163948821e-17,
+        "chart_stationarity_inf_norm": 5.135253911261739e-11,
+        "chart_topology": "electroneutral_log_total+softmax_shares+neutral_log_amounts+log_packing_fraction",
+        "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+        "complementarity_inf_norm": 0.0,
+        "condition_number_inf": 111.54402449375947,
+        "constraint_jacobian_shape": [
+          3,
+          9
+        ],
+        "derivative_constraint_basis": "ordered_per_row_in_derivative_constraint_order",
+        "derivative_constraint_order": [
+          "balance_amount_mol:compiled_row=0",
+          "balance_amount_mol:compiled_row=1",
+          "balance_amount_mol:compiled_row=2"
+        ],
+        "derivative_coordinate_order": [
+          "log_charge_equivalents",
+          "cation_log_share_ratio:retained_species_index=3:reference_retained_species_index=7",
+          "anion_log_share_ratio:retained_species_index=4:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=5:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=6:reference_retained_species_index=8",
+          "log_amount_mol:retained_species_index=0",
+          "log_amount_mol:retained_species_index=1",
+          "log_amount_mol:retained_species_index=2",
+          "log_packing_fraction"
+        ],
+        "derivative_objective_basis": "dimensionless_fixed_TP_A_plus_PV_plus_reference_over_RT",
+        "failure_kind": "none",
+        "failure_reason": "",
+        "first_failed_numerical_criterion": null,
+        "first_failed_physical_criterion": null,
+        "globality_status": "not_guaranteed",
+        "kkt_dimension": 9,
+        "kkt_rank": 9,
+        "kkt_root_shape": [
+          9,
+          9
+        ],
+        "kkt_root_status": "interior_no_active_bounds",
+        "kkt_stationarity_inf_norm": 1.0172840347877354e-10,
+        "lagrangian_hessian_shape": [
+          9,
+          9
+        ],
+        "local_minimum_status": "passed",
+        "minimum_amount_mol": 2.376098246523327e-14,
+        "negative_curvature_recovery_attempts": 0,
+        "negative_curvature_recovery_selected_sign": 0,
+        "negative_curvature_recovery_status": "not_needed",
+        "numerical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 1.110265052532987e-10
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "complementarity_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "kkt_stationarity_inf_norm",
+            "status": "passed",
+            "value": 1.0172840347877354e-10
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "chart_stationarity_inf_norm",
+            "status": "passed",
+            "value": 5.135253911261739e-11
+          },
+          {
+            "comparison": ">=",
+            "limit": 1.0,
+            "name": "derivative_evidence_finite",
+            "status": "passed",
+            "value": 1.0
+          }
+        ],
+        "numerical_status": "passed",
+        "objective_gradient_shape": [
+          9
+        ],
+        "packing_fraction": 2.3815188034071046e-05,
+        "packing_fraction_max": 0.74,
+        "packing_fraction_min": 1e-06,
+        "physical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 1.110265052532987e-10
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "charge_inf_norm",
+            "status": "passed",
+            "value": 7.567731163948821e-17
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-08,
+            "name": "pressure_relative_residual",
+            "status": "passed",
+            "value": 5.800422963918765e-12
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "reaction_affinity_inf_norm",
+            "status": "passed",
+            "value": 1.0013487629700926e-10
+          },
+          {
+            "comparison": ">",
+            "limit": 1e-18,
+            "name": "minimum_amount_mol",
+            "status": "passed",
+            "value": 2.376098246523327e-14
+          },
+          {
+            "comparison": ">=",
+            "limit": 1e-06,
+            "name": "packing_fraction_lower_bound",
+            "status": "passed",
+            "value": 2.3815188034071046e-05
+          },
+          {
+            "comparison": "<=",
+            "limit": 0.74,
+            "name": "packing_fraction_upper_bound",
+            "status": "passed",
+            "value": 2.3815188034071046e-05
+          }
+        ],
+        "physical_stationarity_residuals": [
+          2.83648660115432e-11,
+          -4.092726157978177e-12,
+          -6.784262041037437e-11,
+          -9.07363073565648e-12,
+          1.2938983218191424e-11,
+          3.345945742694312e-11,
+          -7.473488494724734e-11,
+          7.780442956573097e-12,
+          1.0172840347877354e-10
+        ],
+        "physical_status": "passed",
+        "predictive_status": "not_adjudicated",
+        "pressure_relative_residual": 5.800422963918765e-12,
+        "provider_domain_status": "passed",
+        "reaction_affinity_inf_norm": 1.0013487629700926e-10,
+        "reaction_affinity_residuals": [
+          1.0013487629700926e-10,
+          4.200728653813712e-11,
+          -1.6299850358336698e-11,
+          4.0259351408167277e-11,
+          5.6193475709030384e-11
+        ],
+        "reduced_hessian_eigenvalue_tolerance": 9.904427021343255e-10,
+        "reduced_hessian_eigenvalues": [
+          2.5451937858183685e-14,
+          3.332161129148702e-07,
+          0.0004898899410032068,
+          0.14643983387700643,
+          0.2886951994531409,
+          8.818628537021677
+        ],
+        "reduced_hessian_inertia": [
+          6,
+          0,
+          0
+        ],
+        "reduced_hessian_nullspace_shape": [
+          6,
+          9
+        ],
+        "reduced_hessian_raw_inertia": [
+          5,
+          1,
+          0
+        ],
+        "reduced_hessian_scale": 9.904427021343254,
+        "reduced_hessian_spectrum_status": "converged",
+        "reduced_hessian_status": "certified_local_minimum",
+        "reference_convergence_error": 4.7492633086676506e-05,
+        "reference_derivative_availability": 0,
+        "reference_representation_residual_inf_norm": 2.331715893385721e-16,
+        "search": {
+          "basin_count": 3,
+          "continuation_status": "not_used",
+          "primary_attempt_count": 21,
+          "primary_budget": 25,
+          "selected_basin_ordinal": 1,
+          "selected_objective": -2045.3866234373847,
+          "selection_label": "lowest_observed_certified_local_value",
+          "status": "certified_local_minimum"
+        },
+        "solver_status": "solve_succeeded",
+        "structural_zero_species_indices": [],
+        "total_ion_fraction": null,
+        "total_ion_fraction_max": null,
+        "trace_floor_mol": 1e-18,
+        "trace_status": "interior",
+        "volume_m3": 3.146205528814721
+      },
+      "elapsed_s": 66.01962454299792,
+      "equilibrium_artifact_identity": {
+        "equilibrium_distribution": "epcsaft-equilibrium",
+        "equilibrium_record_sha256": "sha256:2713d8250239acfd31096b73d13c891abb006f2ebd898f5d43d8bbd5bcd7dda0",
+        "equilibrium_version": "0.2.0.dev0",
+        "provider_distribution": "epcsaft",
+        "provider_record_sha256": "sha256:dcda4fb3d8a93244c337d8d42dba682f2423d351c9d5ca5d80cf6c9d622b6e88",
+        "provider_sdk_abi_version": 1,
+        "provider_sdk_capsule_name": "epcsaft.native_sdk.v1",
+        "provider_sdk_mixture_result_size": 296,
+        "provider_sdk_neutral_reference_derivative_result_size": 968,
+        "provider_sdk_neutral_reference_result_size": 440,
+        "provider_sdk_reacting_phase_parameter_result_size": 600,
+        "provider_sdk_result_size": 376,
+        "provider_sdk_table_size": 472,
+        "provider_version": "0.2.0.dev0"
+      },
+      "equilibrium_mole_fractions": [
+        3.7393433443934704e-08,
+        0.02700229327977307,
+        0.8475072804805277,
+        0.07303128631775845,
+        0.01218648394789246,
+        0.019535844491641703,
+        0.020572183789256397,
+        2.666458962662952e-15,
+        0.00016459029971414475
+      ],
+      "equilibrium_predicted_pco2_pa": 0.0005464968812983229,
+      "failure_kind": "none",
+      "first_failed_numerical_criterion": "",
+      "first_failed_physical_criterion": "",
       "legacy_predicted_pco2_pa": 1136.2204050869198,
+      "ln_k_provider_basis": [
+        -616.412343125847,
+        -600.6806977220258,
+        -958.7579717435983,
+        -28.057845667600375,
+        -305.0407751246027
+      ],
       "loading_mol_co2_per_mol_mea": 0.466,
-      "local_minimum_status": "not_adjudicated",
-      "log10_equilibrium_over_legacy": "",
+      "local_minimum_status": "passed",
+      "log10_equilibrium_over_legacy": -6.317874896494813,
       "model_id": "M4B",
-      "numerical_status": "not_adjudicated",
+      "numerical_status": "passed",
       "observation_id": "vle_obs_0137",
       "parameter_fingerprint": "sha256:3e6cc5a6d053943fafcfc412b97bbdb15aeecc0608e4cfe4c9ffcc0788b2a3ab",
-      "physical_status": "not_adjudicated",
-      "provider_domain_status": "not_adjudicated",
-      "reason": "Provider neutral-reference ABI contract is incomplete",
-      "solver_status": "input_or_native_error",
+      "physical_status": "passed",
+      "reason": "",
+      "solver_status": "solve_succeeded",
       "state_pressure_pa": 7326.7,
-      "status": "BLOCKED_PROVIDER_NEUTRAL_REFERENCE_ABI",
+      "status": "CERTIFIED_LOCAL_EQUILIBRIUM",
       "temperature_k": 313.15
     },
     {
-      "chemical_certification_level": "NOT_EVALUATED",
-      "elapsed_s": 0.00016739900456741452,
-      "equilibrium_predicted_pco2_pa": "",
+      "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+      "chemical_diagnostics": {
+        "active_constraint_bounds": [],
+        "active_lower_bounds": [],
+        "active_trace_species": [],
+        "active_upper_bounds": [],
+        "amounts_mol": [
+          1.9107104044198962e-07,
+          0.1740962288653074,
+          7.528923545113451,
+          0.7394997516620562,
+          0.08640401935542724,
+          0.1086386772772405,
+          0.27095711229629205,
+          7.27656441161107e-15,
+          0.0025428304368115703
+        ],
+        "balance_inf_norm": 6.767081339731362e-11,
+        "boundary_status": "strict_interior",
+        "callback_error": "",
+        "charge_inf_norm": 3.8163916471489756e-17,
+        "chart_stationarity_inf_norm": 3.3240077357277187e-12,
+        "chart_topology": "electroneutral_log_total+softmax_shares+neutral_log_amounts+log_packing_fraction",
+        "chemical_certification_level": "LOCAL_EQUILIBRIUM",
+        "complementarity_inf_norm": 0.0,
+        "condition_number_inf": 134.82221302496325,
+        "constraint_jacobian_shape": [
+          3,
+          9
+        ],
+        "derivative_constraint_basis": "ordered_per_row_in_derivative_constraint_order",
+        "derivative_constraint_order": [
+          "balance_amount_mol:compiled_row=0",
+          "balance_amount_mol:compiled_row=1",
+          "balance_amount_mol:compiled_row=2"
+        ],
+        "derivative_coordinate_order": [
+          "log_charge_equivalents",
+          "cation_log_share_ratio:retained_species_index=3:reference_retained_species_index=7",
+          "anion_log_share_ratio:retained_species_index=4:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=5:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=6:reference_retained_species_index=8",
+          "log_amount_mol:retained_species_index=0",
+          "log_amount_mol:retained_species_index=1",
+          "log_amount_mol:retained_species_index=2",
+          "log_packing_fraction"
+        ],
+        "derivative_objective_basis": "dimensionless_fixed_TP_A_plus_PV_plus_reference_over_RT",
+        "failure_kind": "none",
+        "failure_reason": "",
+        "first_failed_numerical_criterion": null,
+        "first_failed_physical_criterion": null,
+        "globality_status": "not_guaranteed",
+        "kkt_dimension": 9,
+        "kkt_rank": 9,
+        "kkt_root_shape": [
+          9,
+          9
+        ],
+        "kkt_root_status": "interior_no_active_bounds",
+        "kkt_stationarity_inf_norm": 6.359712756420777e-11,
+        "lagrangian_hessian_shape": [
+          9,
+          9
+        ],
+        "local_minimum_status": "passed",
+        "minimum_amount_mol": 7.27656441161107e-15,
+        "negative_curvature_recovery_attempts": 0,
+        "negative_curvature_recovery_selected_sign": 0,
+        "negative_curvature_recovery_status": "not_needed",
+        "numerical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 6.767081339731362e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "complementarity_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "kkt_stationarity_inf_norm",
+            "status": "passed",
+            "value": 6.359712756420777e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "chart_stationarity_inf_norm",
+            "status": "passed",
+            "value": 3.3240077357277187e-12
+          },
+          {
+            "comparison": ">=",
+            "limit": 1.0,
+            "name": "derivative_evidence_finite",
+            "status": "passed",
+            "value": 1.0
+          }
+        ],
+        "numerical_status": "passed",
+        "objective_gradient_shape": [
+          9
+        ],
+        "packing_fraction": 2.389311402637006e-05,
+        "packing_fraction_max": 0.74,
+        "packing_fraction_min": 1e-06,
+        "physical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 6.767081339731362e-11
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "charge_inf_norm",
+            "status": "passed",
+            "value": 3.8163916471489756e-17
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-08,
+            "name": "pressure_relative_residual",
+            "status": "passed",
+            "value": 2.6775766330328883e-13
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "reaction_affinity_inf_norm",
+            "status": "passed",
+            "value": 6.620737012175374e-11
+          },
+          {
+            "comparison": ">",
+            "limit": 1e-18,
+            "name": "minimum_amount_mol",
+            "status": "passed",
+            "value": 7.27656441161107e-15
+          },
+          {
+            "comparison": ">=",
+            "limit": 1e-06,
+            "name": "packing_fraction_lower_bound",
+            "status": "passed",
+            "value": 2.389311402637006e-05
+          },
+          {
+            "comparison": "<=",
+            "limit": 0.74,
+            "name": "packing_fraction_upper_bound",
+            "status": "passed",
+            "value": 2.389311402637006e-05
+          }
+        ],
+        "physical_stationarity_residuals": [
+          2.2168933355715126e-11,
+          1.3926637620897964e-12,
+          -4.587263902067207e-11,
+          -3.7694292132073315e-12,
+          2.575717417130363e-12,
+          1.3574918966696714e-11,
+          -3.856115426970064e-11,
+          6.831868404333363e-12,
+          6.359712756420777e-11
+        ],
+        "physical_status": "passed",
+        "predictive_status": "not_adjudicated",
+        "pressure_relative_residual": 2.6775766330328883e-13,
+        "provider_domain_status": "passed",
+        "reaction_affinity_inf_norm": 6.620737012175374e-11,
+        "reaction_affinity_residuals": [
+          6.620737012175374e-11,
+          2.9103830456733704e-11,
+          1.7053025658242404e-13,
+          2.8833824217144866e-11,
+          3.4074881466076155e-11
+        ],
+        "reduced_hessian_eigenvalue_tolerance": 1.0776634475343051e-09,
+        "reduced_hessian_eigenvalues": [
+          8.649434833138689e-15,
+          1.910714388381543e-07,
+          0.0008556335071238261,
+          0.10580446556808208,
+          0.28017947101828816,
+          8.80120600290389
+        ],
+        "reduced_hessian_inertia": [
+          6,
+          0,
+          0
+        ],
+        "reduced_hessian_nullspace_shape": [
+          6,
+          9
+        ],
+        "reduced_hessian_raw_inertia": [
+          5,
+          1,
+          0
+        ],
+        "reduced_hessian_scale": 10.776634475343052,
+        "reduced_hessian_spectrum_status": "converged",
+        "reduced_hessian_status": "certified_local_minimum",
+        "reference_convergence_error": 4.7042847000966503e-05,
+        "reference_derivative_availability": 0,
+        "reference_representation_residual_inf_norm": 2.331715893385721e-16,
+        "search": {
+          "basin_count": 2,
+          "continuation_status": "not_used",
+          "primary_attempt_count": 21,
+          "primary_budget": 25,
+          "selected_basin_ordinal": 1,
+          "selected_objective": -2044.8403255997598,
+          "selection_label": "lowest_observed_certified_local_value",
+          "status": "certified_local_minimum"
+        },
+        "solver_status": "solve_succeeded",
+        "structural_zero_species_indices": [],
+        "total_ion_fraction": null,
+        "total_ion_fraction_max": null,
+        "trace_floor_mol": 1e-18,
+        "trace_status": "interior",
+        "volume_m3": 3.142902433788758
+      },
+      "elapsed_s": 103.79563216798124,
+      "equilibrium_artifact_identity": {
+        "equilibrium_distribution": "epcsaft-equilibrium",
+        "equilibrium_record_sha256": "sha256:2713d8250239acfd31096b73d13c891abb006f2ebd898f5d43d8bbd5bcd7dda0",
+        "equilibrium_version": "0.2.0.dev0",
+        "provider_distribution": "epcsaft",
+        "provider_record_sha256": "sha256:dcda4fb3d8a93244c337d8d42dba682f2423d351c9d5ca5d80cf6c9d622b6e88",
+        "provider_sdk_abi_version": 1,
+        "provider_sdk_capsule_name": "epcsaft.native_sdk.v1",
+        "provider_sdk_mixture_result_size": 296,
+        "provider_sdk_neutral_reference_derivative_result_size": 968,
+        "provider_sdk_neutral_reference_result_size": 440,
+        "provider_sdk_reacting_phase_parameter_result_size": 600,
+        "provider_sdk_result_size": 376,
+        "provider_sdk_table_size": 472,
+        "provider_version": "0.2.0.dev0"
+      },
+      "equilibrium_mole_fractions": [
+        2.1442004646244335e-08,
+        0.019537090181685028,
+        0.8448962923010499,
+        0.08298671046305643,
+        0.009696264699179991,
+        0.012191439464358073,
+        0.030406824850854115,
+        8.165765338459579e-16,
+        0.00028535659781095315
+      ],
+      "equilibrium_predicted_pco2_pa": 0.0004156703148078861,
+      "failure_kind": "none",
+      "first_failed_numerical_criterion": "",
+      "first_failed_physical_criterion": "",
       "legacy_predicted_pco2_pa": 5993.0906606941135,
+      "ln_k_provider_basis": [
+        -616.1047202666241,
+        -601.1196804609393,
+        -958.3492599045342,
+        -28.33772950215139,
+        -306.30432897237023
+      ],
       "loading_mol_co2_per_mol_mea": 0.466,
-      "local_minimum_status": "not_adjudicated",
-      "log10_equilibrium_over_legacy": "",
+      "local_minimum_status": "passed",
+      "log10_equilibrium_over_legacy": -7.1589018371792355,
       "model_id": "M5Q",
-      "numerical_status": "not_adjudicated",
+      "numerical_status": "passed",
       "observation_id": "vle_obs_0137",
       "parameter_fingerprint": "sha256:05f4fd91ae3f1ee1d5672fa1778458dcd2962a58d8d81a301070171b3ad4bd5e",
-      "physical_status": "not_adjudicated",
-      "provider_domain_status": "not_adjudicated",
-      "reason": "Provider neutral-reference ABI contract is incomplete",
-      "solver_status": "input_or_native_error",
+      "physical_status": "passed",
+      "reason": "",
+      "solver_status": "solve_succeeded",
       "state_pressure_pa": 7326.7,
-      "status": "BLOCKED_PROVIDER_NEUTRAL_REFERENCE_ABI",
+      "status": "CERTIFIED_LOCAL_EQUILIBRIUM",
       "temperature_k": 313.15
     },
     {
-      "chemical_certification_level": "NOT_EVALUATED",
-      "elapsed_s": 0.00021712901070713997,
+      "chemical_certification_level": "FEASIBLE_ONLY",
+      "chemical_diagnostics": {
+        "active_constraint_bounds": [],
+        "active_lower_bounds": [],
+        "active_trace_species": [],
+        "active_upper_bounds": [],
+        "amounts_mol": [
+          1.6665690930296003e-11,
+          0.9999999191719112,
+          3.518628556604839,
+          8.082792084738142e-08,
+          1.0755977381045972e-12,
+          0.46599552907195674,
+          4.470919532634558e-06,
+          2.1962189992467676,
+          1.7302146091625907
+        ],
+        "balance_inf_norm": 2.630784479151771e-12,
+        "boundary_status": "not_adjudicated",
+        "callback_error": "",
+        "charge_inf_norm": 0.0,
+        "chart_stationarity_inf_norm": 1.3500663002484873e-10,
+        "chart_topology": "electroneutral_log_total+softmax_shares+neutral_log_amounts+log_packing_fraction",
+        "chemical_certification_level": "FEASIBLE_ONLY",
+        "complementarity_inf_norm": 9.090909090909094e-12,
+        "condition_number_inf": 9.283290365135109,
+        "constraint_jacobian_shape": [
+          3,
+          9
+        ],
+        "derivative_constraint_basis": "ordered_per_row_in_derivative_constraint_order",
+        "derivative_constraint_order": [
+          "balance_amount_mol:compiled_row=0",
+          "balance_amount_mol:compiled_row=1",
+          "balance_amount_mol:compiled_row=2"
+        ],
+        "derivative_coordinate_order": [
+          "log_charge_equivalents",
+          "cation_log_share_ratio:retained_species_index=3:reference_retained_species_index=7",
+          "anion_log_share_ratio:retained_species_index=4:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=5:reference_retained_species_index=8",
+          "anion_log_share_ratio:retained_species_index=6:reference_retained_species_index=8",
+          "log_amount_mol:retained_species_index=0",
+          "log_amount_mol:retained_species_index=1",
+          "log_amount_mol:retained_species_index=2",
+          "log_packing_fraction"
+        ],
+        "derivative_objective_basis": "dimensionless_fixed_TP_A_plus_PV_plus_reference_over_RT",
+        "failure_kind": "exhausted_multistart_search",
+        "failure_reason": "exhausted_multistart_search: no candidate passed all first- and second-order certification gates; first failed numerical criterion=kkt_stationarity_inf_norm; first failed physical criterion=pressure_relative_residual; search status=search_exhausted_no_certified_candidate",
+        "first_failed_numerical_criterion": "kkt_stationarity_inf_norm",
+        "first_failed_physical_criterion": "pressure_relative_residual",
+        "globality_status": "not_guaranteed",
+        "kkt_dimension": 9,
+        "kkt_rank": 9,
+        "kkt_root_shape": [
+          9,
+          9
+        ],
+        "kkt_root_status": "interior_no_active_bounds",
+        "kkt_stationarity_inf_norm": 8.035110801174397,
+        "lagrangian_hessian_shape": [
+          9,
+          9
+        ],
+        "local_minimum_status": "not_adjudicated",
+        "minimum_amount_mol": 1.0755977381045972e-12,
+        "negative_curvature_recovery_attempts": 0,
+        "negative_curvature_recovery_selected_sign": 0,
+        "negative_curvature_recovery_status": "not_needed",
+        "numerical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 2.630784479151771e-12
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "complementarity_inf_norm",
+            "status": "passed",
+            "value": 9.090909090909094e-12
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "kkt_stationarity_inf_norm",
+            "status": "failed",
+            "value": 8.035110801174397
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "chart_stationarity_inf_norm",
+            "status": "passed",
+            "value": 1.3500663002484873e-10
+          },
+          {
+            "comparison": ">=",
+            "limit": 1.0,
+            "name": "derivative_evidence_finite",
+            "status": "passed",
+            "value": 1.0
+          }
+        ],
+        "numerical_status": "failed",
+        "objective_gradient_shape": [
+          9
+        ],
+        "packing_fraction": 0.455377092593612,
+        "packing_fraction_max": 0.74,
+        "packing_fraction_min": 1e-06,
+        "physical_criteria": [
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "balance_inf_norm",
+            "status": "passed",
+            "value": 2.630784479151771e-12
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-09,
+            "name": "charge_inf_norm",
+            "status": "passed",
+            "value": 0.0
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-08,
+            "name": "pressure_relative_residual",
+            "status": "failed",
+            "value": 7.689531570020105e-08
+          },
+          {
+            "comparison": "<=",
+            "limit": 1e-07,
+            "name": "reaction_affinity_inf_norm",
+            "status": "failed",
+            "value": 8.726543170684465
+          },
+          {
+            "comparison": ">",
+            "limit": 1e-18,
+            "name": "minimum_amount_mol",
+            "status": "passed",
+            "value": 1.0755977381045972e-12
+          },
+          {
+            "comparison": ">=",
+            "limit": 1e-06,
+            "name": "packing_fraction_lower_bound",
+            "status": "passed",
+            "value": 0.455377092593612
+          },
+          {
+            "comparison": "<=",
+            "limit": 0.74,
+            "name": "packing_fraction_upper_bound",
+            "status": "passed",
+            "value": 0.455377092593612
+          }
+        ],
+        "physical_stationarity_residuals": [
+          -1.5546081964948826,
+          -4.406208524474749,
+          2.1601675348305776,
+          -3.6289022767001313,
+          8.035110801174397,
+          -2.8515994808890923,
+          -3.628903123791247,
+          2.9374712096264943,
+          1.3828638602226988
+        ],
+        "physical_status": "failed",
+        "predictive_status": "not_adjudicated",
+        "pressure_relative_residual": 7.689531570020105e-08,
+        "provider_domain_status": "passed",
+        "reaction_affinity_inf_norm": 8.726543170684465,
+        "reaction_affinity_residuals": [
+          7.676620412294476e-11,
+          -8.726543170684465,
+          1.5946810094646935e-08,
+          -1.2864894074482436e-06,
+          -1.0128900374050922
+        ],
+        "reduced_hessian_eigenvalue_tolerance": 3.305416750735252e-08,
+        "reduced_hessian_eigenvalues": [
+          1.98480979295632e-11,
+          6.132732849868888e-11,
+          8.082806442447031e-08,
+          4.470894218992326e-06,
+          43.01849672188439,
+          309.24512273162634
+        ],
+        "reduced_hessian_inertia": [
+          6,
+          0,
+          0
+        ],
+        "reduced_hessian_nullspace_shape": [
+          6,
+          9
+        ],
+        "reduced_hessian_raw_inertia": [
+          4,
+          2,
+          0
+        ],
+        "reduced_hessian_scale": 330.5416750735252,
+        "reduced_hessian_spectrum_status": "converged",
+        "reduced_hessian_status": "first_order_not_certified",
+        "reference_convergence_error": 3.6356541386339813e-05,
+        "reference_derivative_availability": 0,
+        "reference_representation_residual_inf_norm": 2.331715893385721e-16,
+        "search": {
+          "basin_count": 0,
+          "continuation_status": "not_used",
+          "primary_attempt_count": 21,
+          "primary_budget": 25,
+          "selected_basin_ordinal": null,
+          "selected_objective": null,
+          "selection_label": "lowest_observed_certified_local_value",
+          "status": "search_exhausted_no_certified_candidate"
+        },
+        "solver_status": "solve_succeeded",
+        "structural_zero_species_indices": [],
+        "total_ion_fraction": null,
+        "total_ion_fraction_max": null,
+        "trace_floor_mol": 1e-18,
+        "trace_status": "interior",
+        "volume_m3": 0.0001762741170644877
+      },
+      "elapsed_s": 103.17109593600617,
       "equilibrium_predicted_pco2_pa": "",
+      "failure_kind": "exhausted_multistart_search",
+      "first_failed_numerical_criterion": "kkt_stationarity_inf_norm",
+      "first_failed_physical_criterion": "pressure_relative_residual",
       "legacy_predicted_pco2_pa": 786178.2905464023,
       "loading_mol_co2_per_mol_mea": 0.466,
       "local_minimum_status": "not_adjudicated",
       "log10_equilibrium_over_legacy": "",
       "model_id": "M5",
-      "numerical_status": "not_adjudicated",
+      "numerical_status": "failed",
       "observation_id": "vle_obs_0137",
       "parameter_fingerprint": "sha256:2b1dc301842844acc3682509143335b7cf754456b55ad542d4c911859f8e0378",
-      "physical_status": "not_adjudicated",
-      "provider_domain_status": "not_adjudicated",
-      "reason": "Provider neutral-reference ABI contract is incomplete",
-      "solver_status": "input_or_native_error",
+      "physical_status": "failed",
+      "provider_domain_status": "passed",
+      "reason": "exhausted_multistart_search: no candidate passed all first- and second-order certification gates; first failed numerical criterion=kkt_stationarity_inf_norm; first failed physical criterion=pressure_relative_residual; search status=search_exhausted_no_certified_candidate",
+      "solver_status": "solve_succeeded",
       "state_pressure_pa": 7326.7,
-      "status": "BLOCKED_PROVIDER_NEUTRAL_REFERENCE_ABI",
+      "status": "NOT_CERTIFIED_EXHAUSTED_MULTISTART_SEARCH",
       "temperature_k": 313.15
     }
   ],
@@ -204,7 +2230,7 @@
   },
   "target_observation_id": "vle_obs_0137",
   "wheel_sha256": {
-    "epcsaft": "9e26af83062445bea93f523cb378de3585fbcde6eb931554e7e4c8b2b7620f1b",
-    "epcsaft-equilibrium": "bb2131642e3ce33914065800ed300d18e83dac12f5fb4d138bb008eb64830da7"
+    "epcsaft": "34894905d489454d2627fe6dfe6f76cd05c41a44fe75cbbf59019248a04b66ba",
+    "epcsaft-equilibrium": "1460fbdb579f9cdc6940db61e644539a82ff58e607cf89c71040b0780d805049"
   }
 }

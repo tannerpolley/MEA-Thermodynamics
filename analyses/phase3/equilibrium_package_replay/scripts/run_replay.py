@@ -203,14 +203,32 @@ def _problem(
     )
 
 
-def _failure_class(reason: str) -> str:
-    if "neutral-reference ABI contract is incomplete" in reason:
-        return "BLOCKED_PROVIDER_NEUTRAL_REFERENCE_ABI"
-    if "inverse-packing geometry ABI contract is incomplete" in reason:
-        return "BLOCKED_PROVIDER_INVERSE_PACKING_ABI"
-    if "primal_solution_not_certified" in reason:
-        return "NOT_CERTIFIED_LOCAL_MINIMUM"
-    return "BLOCKED_UNCLASSIFIED"
+def _failure_class(failure_kind: str) -> str:
+    return {
+        "physical_domain_failure": "NOT_ADMITTED_PHYSICAL_DOMAIN_FAILURE",
+        "exhausted_multistart_search": ("NOT_CERTIFIED_EXHAUSTED_MULTISTART_SEARCH"),
+    }.get(failure_kind, "BLOCKED_UNCLASSIFIED")
+
+
+def _diagnostic_receipt(diagnostics: Any) -> dict[str, Any]:
+    receipt = asdict(diagnostics)
+    for field in (
+        "reduced_hessian",
+        "reduced_hessian_nullspace_basis",
+        "objective_gradient",
+        "constraint_values",
+        "constraint_jacobian",
+        "lagrangian_gradient",
+        "equality_multipliers",
+        "lagrangian_hessian",
+        "covariant_lagrangian_hessian",
+        "kkt_root_jacobian",
+    ):
+        receipt.pop(field)
+    receipt["search"]["basin_count"] = len(diagnostics.search.basins)
+    for field in ("attempts", "basins", "budget_prefixes"):
+        receipt["search"].pop(field)
+    return receipt
 
 
 def _evaluate_model(
@@ -240,9 +258,13 @@ def _evaluate_model(
         "equilibrium_predicted_pco2_pa": "",
         "log10_equilibrium_over_legacy": "",
         "solver_status": "",
+        "failure_kind": "",
+        "chemical_certification_level": "",
         "numerical_status": "",
         "physical_status": "",
         "local_minimum_status": "",
+        "first_failed_numerical_criterion": "",
+        "first_failed_physical_criterion": "",
         "elapsed_s": 0.0,
     }
     problem = _problem(equilibrium, bundle, contract, row)
@@ -270,16 +292,26 @@ def _evaluate_model(
         if state.fugacity is None:
             raise ValueError("Provider returned no fugacity for a certified state")
         pressure = float(state.fugacity.value[0].to("pascal").magnitude)
+        diagnostics = solved.diagnostics
         result.update(
             status="CERTIFIED_LOCAL_EQUILIBRIUM",
             equilibrium_predicted_pco2_pa=pressure,
             log10_equilibrium_over_legacy=math.log10(
                 pressure / result["legacy_predicted_pco2_pa"]
             ),
-            solver_status=solved.diagnostics.solver_status,
-            numerical_status=solved.diagnostics.numerical_status,
-            physical_status=solved.diagnostics.physical_status,
-            local_minimum_status=solved.diagnostics.local_minimum_status,
+            solver_status=diagnostics.solver_status,
+            failure_kind=diagnostics.failure_kind,
+            chemical_certification_level=diagnostics.chemical_certification_level,
+            numerical_status=diagnostics.numerical_status,
+            physical_status=diagnostics.physical_status,
+            local_minimum_status=diagnostics.local_minimum_status,
+            first_failed_numerical_criterion=(
+                diagnostics.first_failed_numerical_criterion or ""
+            ),
+            first_failed_physical_criterion=(
+                diagnostics.first_failed_physical_criterion or ""
+            ),
+            chemical_diagnostics=_diagnostic_receipt(diagnostics),
             equilibrium_mole_fractions=list(solved.mole_fractions),
             ln_k_provider_basis=list(solved.ln_k_provider_basis or ()),
             equilibrium_artifact_identity=asdict(solved.artifact_identity),
@@ -287,14 +319,22 @@ def _evaluate_model(
     except equilibrium.ChemicalEquilibriumError as error:
         diagnostics = error.diagnostics
         result.update(
-            status=_failure_class(str(error)),
+            status=_failure_class(diagnostics.failure_kind),
             reason=str(error),
             solver_status=diagnostics.solver_status,
+            failure_kind=diagnostics.failure_kind,
+            chemical_certification_level=diagnostics.chemical_certification_level,
             numerical_status=diagnostics.numerical_status,
             physical_status=diagnostics.physical_status,
             local_minimum_status=diagnostics.local_minimum_status,
-            chemical_certification_level=diagnostics.chemical_certification_level,
+            first_failed_numerical_criterion=(
+                diagnostics.first_failed_numerical_criterion or ""
+            ),
+            first_failed_physical_criterion=(
+                diagnostics.first_failed_physical_criterion or ""
+            ),
             provider_domain_status=diagnostics.provider_domain_status,
+            chemical_diagnostics=_diagnostic_receipt(diagnostics),
         )
     result["elapsed_s"] = time.perf_counter() - started
     return result
@@ -313,9 +353,13 @@ def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
         "status",
         "reason",
         "solver_status",
+        "failure_kind",
+        "chemical_certification_level",
         "numerical_status",
         "physical_status",
         "local_minimum_status",
+        "first_failed_numerical_criterion",
+        "first_failed_physical_criterion",
         "elapsed_s",
         "parameter_fingerprint",
     )
@@ -379,6 +423,8 @@ def main() -> None:
         overall = "PARITY_EVALUATED"
     elif any(status.startswith("BLOCKED_") for status in statuses):
         overall = "BLOCKED_SHARED_PROVIDER_CAPABILITY"
+    elif "CERTIFIED_LOCAL_EQUILIBRIUM" in statuses:
+        overall = "PARTIAL_LOCAL_EQUILIBRIUM_CERTIFICATION"
     else:
         overall = "NOT_CERTIFIED"
     _write_csv(RESULTS / "equilibrium_replay_comparison.csv", rows)

@@ -38,19 +38,33 @@ capability probe before committing to the expensive multi-start campaign.
 
 ## Current result
 
-With EOS `b2638deb64772f2353f0382d0dc5a3210889a827` and Equilibrium
-`9b7876d486f10d52b567a3e640ba98beafcb8fbe`, all eight model bundles load, but
-the first chemical solve fails before optimization because the installed
-Provider does not advertise a neutral-reference callback for this
-three-neutral, six-ion system. The retained results therefore classify the
-current public route as `BLOCKED_SHARED_PROVIDER_CAPABILITY`; no numerical
-parity claim is made.
+The retained campaign uses EOS
+`02104702e822e1f062bf829f0fe2280e801bbbc4` and Equilibrium
+`7f60cbc3619b2036ea4fbe0f5a3109d63703410c`. The latter is an exact local
+feature commit, not a merged or released dependency. Six of the eight models
+return certified homogeneous local equilibria:
 
-An additional diagnostic using Provider
-`b59c1c7` passed the neutral-reference and inverse-packing interfaces and
-reached a numerically and physically valid solution, but Equilibrium did not
-certify a local minimum (`primal_solution_not_certified`). This confirms that
-the current blocker is not a reason to copy chemistry back downstream. The
-next useful work belongs in the generic Provider/Equilibrium contracts. Only
-after the value path returns certified states is it worth exercising the
-generic evaluator and Jacobian path in `ePC-SAFT-regression`.
+| Model | Result | Liquid CO2 fugacity (Pa) | log10(new/retained) |
+| --- | --- | ---: | ---: |
+| M0 | certified local equilibrium | 2.28693e-4 | -7.055 |
+| M1 | certified local equilibrium | 3.14608e-4 | -6.753 |
+| M2 | physical domain not admitted | -- | -- |
+| M3 | certified local equilibrium | 2.42687e-5 | -7.374 |
+| M4A | certified local equilibrium | 2.80879e-5 | -7.575 |
+| M4B | certified local equilibrium | 5.46497e-4 | -6.318 |
+| M5Q | certified local equilibrium | 4.15670e-4 | -7.159 |
+| M5 | multistart search exhausted without certification | -- | -- |
+
+M2 is rejected during Provider start-pressure bisection before a candidate
+state is available. M5 evaluates 21 starts under a declared budget of 25, but
+no candidate passes all first- and second-order gates. Its retained terminal
+state satisfies material balance and Provider-domain checks but fails physical
+KKT stationarity, reaction affinity, and pressure-residual gates.
+
+The certified values differ from the older MEA-owned solver by six to eight
+orders of magnitude because this lane also applies the source-adjudicated
+reaction constants and exact neutral-reference transformation. The comparison
+therefore does not establish numerical parity or predictive accuracy. Each
+successful row establishes one local homogeneous fixed-temperature,
+fixed-pressure equilibrium only; global equilibrium, parameter validity, and
+regression readiness remain outside this analysis.

@@ -13,11 +13,12 @@ the same eight parameter variants and the same frozen tracer state:
   contract.
 
 The reference value for each model is the retained prediction for
-`vle_obs_0137` in the existing comparison. The Equilibrium lane deliberately
-uses the newer source-adjudicated reaction constants and exact Provider
-neutral-reference transformation. Exact agreement with the old lane is
-therefore not presumed: a successful run would separate solver replacement
-effects from the known reaction/reference-state correction.
+`vle_obs_0137` in the existing comparison. The literature constants use pure
+water as the solvent reference, with every nonwater solute at infinite
+dilution in water on the common aqueous-molality scale. The Provider's
+salt-free equimolar CO2/MEA/water neutral reference is a different
+computational gauge. An exact, charge-neutral transfer between those
+references is therefore required before the reacting-phase solver may run.
 
 ## Run
 
@@ -25,46 +26,37 @@ Build or install exact `epcsaft` and `epcsaft-equilibrium` wheels, then run:
 
 ```bash
 PYTHONPATH=src:analyses/phase3/m0_m3_model_comparison/scripts \
-python analyses/phase3/equilibrium_package_replay/scripts/run_replay.py
+python analyses/phase3/equilibrium_package_replay/scripts/run_replay.py \
+  --models M0 M5 \
+  --provider-wheel /path/to/epcsaft.whl \
+  --equilibrium-wheel /path/to/epcsaft_equilibrium.whl \
+  --provider-wheel-sha256 <sha256> \
+  --equilibrium-wheel-sha256 <sha256>
 ```
 
-The script records installed package identities, source commits, model
-fingerprints, elapsed time, typed failure diagnostics, and—when a state is
-certified—the Equilibrium composition and liquid CO2 fugacity. It fails closed
-if an upstream callback or certification gate rejects the state.
+Before evaluating chemistry, the script matches the installed distributions to
+the exact wheel RECORD and public-header bytes, confirms that neither package
+was imported from a source checkout, and inspects the installed public API for
+the required transfer. If that capability is absent, it writes
+`BLOCKED_UNSUPPORTED_SOURCE_REFERENCE_TRANSFER` and does not construct a model
+or call the solver.
 
 The default run tests all eight models. Use `--models M0` for a short
 capability probe before committing to the expensive multi-start campaign.
 
 ## Current result
 
-The retained campaign uses EOS
-`02104702e822e1f062bf829f0fe2280e801bbbc4` and Equilibrium
-`7f60cbc3619b2036ea4fbe0f5a3109d63703410c`. The latter is an exact local
-feature commit, not a merged or released dependency. Six of the eight models
-return certified homogeneous local equilibria:
+The retained audit uses EOS commit
+`02104702e822e1f062bf829f0fe2280e801bbbc4` and Equilibrium candidate commit
+`6604555a4b0c4efb733281bfa00c7f5efdefd772`. The Equilibrium commit is local and
+is not contained in an `origin/*` branch. Its continuation and certification
+interfaces do not add a caller-declared source-solvent reference. The installed
+EOS callback also exposes its fixed computational reference without a general
+public source-reference transfer operation.
 
-| Model | Result | Liquid CO2 fugacity (Pa) | log10(new/retained) |
-| --- | --- | ---: | ---: |
-| M0 | certified local equilibrium | 2.28693e-4 | -7.055 |
-| M1 | certified local equilibrium | 3.14608e-4 | -6.753 |
-| M2 | physical domain not admitted | -- | -- |
-| M3 | certified local equilibrium | 2.42687e-5 | -7.374 |
-| M4A | certified local equilibrium | 2.80879e-5 | -7.575 |
-| M4B | certified local equilibrium | 5.46497e-4 | -6.318 |
-| M5Q | certified local equilibrium | 4.15670e-4 | -7.159 |
-| M5 | multistart search exhausted without certification | -- | -- |
-
-M2 is rejected during Provider start-pressure bisection before a candidate
-state is available. M5 evaluates 21 starts under a declared budget of 25, but
-no candidate passes all first- and second-order gates. Its retained terminal
-state satisfies material balance and Provider-domain checks but fails physical
-KKT stationarity, reaction affinity, and pressure-residual gates.
-
-The certified values differ from the older MEA-owned solver by six to eight
-orders of magnitude because this lane also applies the source-adjudicated
-reaction constants and exact neutral-reference transformation. The comparison
-therefore does not establish numerical parity or predictive accuracy. Each
-successful row establishes one local homogeneous fixed-temperature,
-fixed-pressure equilibrium only; global equilibrium, parameter validity, and
-regression readiness remain outside this analysis.
+Both M0 and M5 therefore report
+`BLOCKED_UNSUPPORTED_SOURCE_REFERENCE_TRANSFER`. The solver is not called, so
+there are no reaction affinities, pressure or KKT residuals, reduced-Hessian
+inertia, minimum amount, packing fraction, or start accounting to report. The
+previous M0 certificate and M5 diagnostic composition remain diagnostic
+evidence only; neither is a corrected source-bound M5 result.

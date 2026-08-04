@@ -1,2 +1,0 @@
-iteration,initial_a,initial_b_k,initial_c,initial_d_per_k,candidate_a,candidate_b_k,candidate_c,candidate_d_per_k,step_fraction,log10_rmse,group_normalized_log10_rmse,jacobian_rank,scaled_jacobian_condition_number,raw_jacobian_condition_number
-0,2.151,-1545.3,0.0,0.0,32032.62180599853,-987556.1401891113,-5435.370627375245,7.498546416837179,1.0,1.9879789278120847,1.6583529283370617,4,343018.91081614135,1258049884.0072572

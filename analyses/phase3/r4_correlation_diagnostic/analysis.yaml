@@ -1,0 +1,22 @@
+id: r4_correlation_diagnostic
+title: Multisource R4 correlation diagnostic
+status: nonpromoting_experiment
+manuscript_integration: excluded
+inputs:
+  - data/reference/epcsaft_bundles/mea-co2-h2o-nine-species-regression-input/1
+  - data/reference/MEA/observations/vapor_liquid_equilibrium/Canonical_VLE_Observations.csv
+  - data/reference/MEA/manifests/pco2_metrology_manifest.csv
+  - data/reference/MEA/manifests/grouped_split_manifest.csv
+  - source_reference_transfer_contract.json
+outputs:
+  - results/r4_correlation_fit_rows.csv
+  - results/r4_correlation_fit_parameters.csv
+  - results/r4_correlation_fit_metrics.csv
+  - results/r4_reaction_sensitivity_rows.csv
+  - results/r4_eos_sensitivity_rows.csv
+  - results/r4_state_failures.csv
+  - results/r4_correlation_fit_receipt.json
+  - figures/r4_correlation_fit_pco2.png
+  - figures/r4_correlation_fit_residual_structure.png
+  - figures/r4_correlation_fit_sensitivity.png
+claim_boundary: The pressure-only four-coefficient R4 update is ill-conditioned and cannot separate R2/R4/R5 chemistry from selected ionic EOS coordinates. It is a falsification experiment, not a promoted correlation or predictive model.

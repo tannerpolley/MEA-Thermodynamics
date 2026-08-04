@@ -45,7 +45,7 @@ GATE0_PREREGISTRATION_PATH = (
     / "ionic_volumetric_fit_preregistration.json"
 )
 EXPECTED_GATE0_CANONICAL_SHA256 = (
-    "46643ed5b907a2735fc19013c62acc0851e59bbd8179cfc2a93844e90648d402"
+    "ee38cd533ac4647fb20cb05e06694306c2c0fd8aabedcfd09655e9592c76f454"
 )
 GATE0_REPO_ROOT = Path(__file__).resolve().parents[3]
 EXPECTED_TRACER_SOURCES = {
@@ -366,7 +366,7 @@ def validate_gate0_preregistration(payload: Mapping[str, Any]) -> dict[str, Any]
     if actual != expected:
         raise PreregistrationError("Gate 0 active coordinate order or scaling drifted")
     if payload.get("state_partition", {}).get("grouped_split_sha256") != (
-        "121c73da3ab87498a019beeceee7ee00a9464eca64b5fd861c0b326149ab9c72"
+        "af205ad5968667cf25dc9205d780738035769664a94cc9a421cd3c67148ff804"
     ):
         raise PreregistrationError("Gate 0 grouped split identity drifted")
     if payload.get("execution_admission", {}).get("admitted") is not False:
@@ -572,13 +572,13 @@ def validate_preregistration(
     }
     if readiness_record != expected_readiness_record:
         raise PreregistrationError("preregistration readiness hashes or frozen role counts have drifted")
-    if current_readiness.get("role_counts") != {"active_training": 195, "reserved_validation": 172}:
-        raise PreregistrationError("frozen regression role counts are not 195 training and 172 validation")
+    if current_readiness.get("role_counts") != {"active_training": 147, "reserved_validation": 220}:
+        raise PreregistrationError("frozen regression role counts are not 147 training and 220 validation")
 
     if frozen["target_role"] != "active_training":
         raise PreregistrationError("final fitting may use only target_role='active_training'")
     expected_target_counts, expected_parameters = _native_training_contract()
-    if frozen["target_counts"] != expected_target_counts or sum(expected_target_counts.values()) != 116:
+    if frozen["target_counts"] != expected_target_counts or sum(expected_target_counts.values()) != 147:
         raise PreregistrationError("training target counts differ from the frozen native problem")
     if frozen["parameters"] != expected_parameters:
         raise PreregistrationError("parameter order, bounds, scales, initial values, or regularization have drifted")

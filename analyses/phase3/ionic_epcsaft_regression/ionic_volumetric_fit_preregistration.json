@@ -8,9 +8,9 @@
     "path": "docs/science/mea-coupled-regression-master-plan.md"
   },
   "state_partition": {
-    "training_states": 195,
-    "reserved_states": 172,
-    "grouped_split_sha256": "121c73da3ab87498a019beeceee7ee00a9464eca64b5fd861c0b326149ab9c72",
+    "training_states": 147,
+    "reserved_states": 220,
+    "grouped_split_sha256": "af205ad5968667cf25dc9205d780738035769664a94cc9a421cd3c67148ff804",
     "loading_role": "fixed_state_input_not_target"
   },
   "active_coordinates": [

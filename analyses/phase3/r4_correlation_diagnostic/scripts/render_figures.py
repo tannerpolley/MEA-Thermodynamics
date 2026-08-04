@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -11,7 +12,7 @@ from MEA.common.config import REPO_ROOT
 
 ANALYSIS = REPO_ROOT / "analyses/phase3/r4_correlation_diagnostic"
 RESULTS = ANALYSIS / "results"
-FIGURES = ANALYSIS / "figures"
+FIGURE_OUTPUT = ANALYSIS / "figures/r4_diagnostic/output"
 MODEL_STYLES = {
     "M5_literature_R4": {"label": "Literature R4", "color": "#9C3D10", "marker": "s"},
     "M5_fitted_R4": {"label": "Fitted R4", "color": "#006D8F", "marker": "D"},
@@ -29,8 +30,18 @@ def _read(path: Path) -> list[dict[str, str]]:
 
 
 def _finish(fig: plt.Figure, stem: str) -> None:
-    FIGURES.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIGURES / f"{stem}.png", dpi=300, bbox_inches="tight")
+    sidecar = json.loads(
+        (FIGURE_OUTPUT / f"{stem}.mpl.yaml").read_text(encoding="utf-8")
+    )
+    settings = sidecar["matplotlib"]
+    if settings.get("title"):
+        fig.suptitle(settings["title"])
+    fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.96))
+    fig.savefig(
+        FIGURE_OUTPUT / f"{stem}.png",
+        dpi=int(settings["dpi"]),
+        bbox_inches=settings["bbox_inches"],
+    )
     plt.close(fig)
 
 
@@ -43,7 +54,7 @@ def _float(row: dict[str, str], key: str) -> float:
     return float(row[key])
 
 
-def _parity(rows: list[dict[str, str]]) -> None:
+def _parity(rows: list[dict[str, str]], receipt: dict[str, object]) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(9.2, 4.1), sharex=True, sharey=True)
     all_values = []
     for axis, (model_id, model_style) in zip(axes, MODEL_STYLES.items(), strict=True):
@@ -85,11 +96,12 @@ def _parity(rows: list[dict[str, str]]) -> None:
         axis.set_ylim(lower, upper)
     axes[0].set_ylabel(r"Modeled liquid $CO_2$ fugacity (Pa)")
     axes[1].legend(frameon=False, fontsize=9)
+    counts = receipt["row_counts"]
     fig.suptitle(
-        "Reactive M5 pressure comparison: 116 evaluated of 121 admitted states",
-        y=1.01,
+        "Reactive M5 pressure comparison: "
+        f"{counts['literature_evaluated']} evaluated of "
+        f"{counts['training_admitted'] + counts['reserved_validation']} admitted states"
     )
-    fig.tight_layout()
     _finish(fig, "r4_correlation_fit_pco2")
 
 
@@ -124,14 +136,12 @@ def _residual_structure(rows: list[dict[str, str]]) -> None:
             axis.set_xscale("log")
         _style(axis)
     axes[0, 1].legend(frameon=False, fontsize=9)
-    fig.suptitle("Residual structure after the diagnostic R4 fit")
-    fig.tight_layout()
     _finish(fig, "r4_correlation_fit_residual_structure")
 
 
 def _sensitivity() -> None:
-    reaction = _read(RESULTS / "r4_reaction_sensitivity_rows.csv")
-    eos = _read(RESULTS / "r4_eos_sensitivity_rows.csv")
+    reaction = _read(FIGURE_OUTPUT / "r4_reaction_sensitivity_rows.csv")
+    eos = _read(FIGURE_OUTPUT / "r4_eos_sensitivity_rows.csv")
     fig, axes = plt.subplots(1, 2, figsize=(9.2, 4.3))
     reactions = sorted({row["reaction_id"] for row in reaction})
     reaction_p = [
@@ -212,7 +222,6 @@ def _sensitivity() -> None:
     axes[1].set_title("Selected EOS-parameter sensitivities")
     axes[1].legend(frameon=False, fontsize=9)
     _style(axes[1])
-    fig.tight_layout()
     _finish(fig, "r4_correlation_fit_sensitivity")
 
 
@@ -225,8 +234,11 @@ def main() -> None:
             "axes.labelsize": 10,
         }
     )
-    rows = _read(RESULTS / "r4_correlation_fit_rows.csv")
-    _parity(rows)
+    rows = _read(FIGURE_OUTPUT / "r4_correlation_fit_rows.csv")
+    receipt = json.loads(
+        (RESULTS / "r4_correlation_fit_receipt.json").read_text(encoding="utf-8")
+    )
+    _parity(rows, receipt)
     _residual_structure(rows)
     _sensitivity()
 

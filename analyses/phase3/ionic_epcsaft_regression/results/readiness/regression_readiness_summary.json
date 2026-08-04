@@ -14,8 +14,8 @@
       "reserved_validation": 67
     },
     "vle_pressure": {
-      "active_training": 72,
-      "reserved_validation": 49
+      "active_training": 24,
+      "reserved_validation": 97
     }
   },
   "failed_row_policy": "Every attempted reserved row remains in validation accounting; solver failure is a failed prediction and may not be omitted or replaced.",
@@ -94,8 +94,8 @@
   ],
   "readiness_decision": "preregistration_ready_upstream_execution_blocked",
   "role_counts": {
-    "active_training": 195,
-    "reserved_validation": 172
+    "active_training": 147,
+    "reserved_validation": 220
   },
   "row_counts": {
     "speciation": 111,
@@ -113,7 +113,7 @@
     "data/reference/MEA/observations/liquid_speciation/Canonical_Combined_ChEq.csv": "8c07df9efd1c1ecbd775ccdd42791e0cef1880b3837e5749a60d2142aa85809e",
     "data/reference/MEA/observations/vapor_liquid_equilibrium/Canonical_VLE_Observations.csv": "9e7d9ba5fead8bfa83a311dad341e3e2e8df1806d5249642a23562e99a72cb73"
   },
-  "split_hash": "121c73da3ab87498a019beeceee7ee00a9464eca64b5fd861c0b326149ab9c72",
+  "split_hash": "af205ad5968667cf25dc9205d780738035769664a94cc9a421cd3c67148ff804",
   "target_admission": [
     {
       "admission_reason": "Canonical pressure rows and public target support are present; execution remains gated separately.",

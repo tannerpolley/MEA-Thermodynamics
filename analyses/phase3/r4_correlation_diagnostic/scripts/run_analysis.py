@@ -18,12 +18,19 @@ from urllib.parse import unquote, urlparse
 import numpy as np
 from MEA.common.analysis_io import write_json_file
 from MEA.common.config import REPO_ROOT
-from MEA.common.mea_source_contracts import load_reaction_contract
+from MEA.common.mea_source_contracts import (
+    load_reaction_contract,
+    load_sentinel_contract,
+    validate_reaction_contract,
+    validate_sentinel_contract,
+)
 
 
 ANALYSIS = REPO_ROOT / "analyses/phase3/r4_correlation_diagnostic"
 RESULTS = ANALYSIS / "results"
+FIGURE_OUTPUT = ANALYSIS / "figures/r4_diagnostic/output"
 SOURCE_REFERENCE = ANALYSIS / "source_reference_transfer_contract.json"
+ANALYSIS_PARTITION = ANALYSIS / "data/input/r4_training_partition.json"
 VLE = (
     REPO_ROOT
     / "data/reference/MEA/observations/vapor_liquid_equilibrium"
@@ -35,7 +42,14 @@ SPECIATION = (
     / "Canonical_Combined_ChEq.csv"
 )
 METROLOGY = REPO_ROOT / "data/reference/MEA/manifests/pco2_metrology_manifest.csv"
-SPLIT = REPO_ROOT / "data/reference/MEA/manifests/grouped_split_manifest.csv"
+CANONICAL_SPLIT = REPO_ROOT / "data/reference/MEA/manifests/grouped_split_manifest.csv"
+REACTION_CONTRACT = (
+    REPO_ROOT / "data/reference/MEA/manifests/chemical_reaction_source_contract.json"
+)
+SENTINEL_CONTRACT = (
+    REPO_ROOT
+    / "data/reference/MEA/manifests/homogeneous_speciation_sentinel_contract.json"
+)
 BASE_BUNDLE = (
     REPO_ROOT
     / "data/reference/epcsaft_bundles"
@@ -51,11 +65,9 @@ GROSS_CO2 = {
 NEUTRAL_DIPOLES = {"water": 1.8546, "monoethanolamine": 2.27}
 
 REFERENCE_TEMPERATURE_K = 313.15
-LITERATURE_A = 2.151
-LITERATURE_B_K = -1545.3
-LITERATURE_C = 0.0
-LITERATURE_D_PER_K = 0.0
 R4_LN_K_BOUNDS = (-20.0, 10.0)
+MOLAR_MASS_ROUNDING_TOLERANCE_KG_PER_MOL = 5.0e-6
+SOURCE_REFERENCE_CONVERGENCE_TOLERANCE = 5.0e-5
 EOS_DIRECTIONAL_STEP = 1.0e-5
 EOS_DIRECTIONAL_ABS_TOLERANCE = 2.0e-6
 EOS_DIRECTIONAL_REL_TOLERANCE = 5.0e-3
@@ -86,6 +98,18 @@ EOS_PARAMETER_SPECS = (
         "affine_scale": 1.9,
     },
 )
+EXPECTED_DISTRIBUTIONS = {
+    "epcsaft": {
+        "version": "0.2.0.dev0",
+        "record_sha256": "99986b14dfc31d96ee241308a30e3e05979f73e7ee8c17bcc97106f14858a78d",
+        "wheel_sha256": "1622162b929cb8cd1a10d7c582a6b913babb8580a9f2188ee4fdf324d92f2772",
+    },
+    "epcsaft-equilibrium": {
+        "version": "0.2.0.dev0",
+        "record_sha256": "2718d1395ec219e4fd9b69d88255f5997a7451b827ffb5214fefabf71a3bf07b",
+        "wheel_sha256": "397f0745fc692d33ea3a2d855a33346c516038bfd221798bc05f8ca02fde9b77",
+    },
+}
 
 
 @dataclass(frozen=True)
@@ -105,6 +129,15 @@ class FitRow:
     carbamate_target: float | None
     carbamate_lower_row: str
     carbamate_upper_row: str
+
+
+@dataclass(frozen=True)
+class EvaluationTask:
+    bundle: str
+    row: FitRow
+    r4_coefficients: tuple[float, float, float, float]
+    cached_offsets: tuple[float, ...] | None
+    with_sensitivity: bool
 
 
 def _rows(path: Path) -> list[dict[str, str]]:
@@ -211,9 +244,10 @@ def _prepare_m5_bundle(destination: Path) -> None:
         ],
     )
     cross_energy = 0.5 * 2425.7
-    cross_kappa = math.sqrt(0.04509 * 0.0450) * (
-        math.sqrt(2.7927 * 2.7852) / (0.5 * (2.7927 + 2.7852))
-    ) ** 3
+    cross_kappa = (
+        math.sqrt(0.04509 * 0.0450)
+        * (math.sqrt(2.7927 * 2.7852) / (0.5 * (2.7927 + 2.7852))) ** 3
+    )
     association_rows = []
     for co2_site, water_site in (("a", "b"), ("b", "a")):
         prefix = f"carbon-dioxide-{co2_site}-water-{water_site}"
@@ -265,10 +299,14 @@ def _prepare_m5_bundle(destination: Path) -> None:
     if found != gross_families:
         raise ValueError(f"missing CO2 pure records: {gross_families - found}")
     association_rows = _rows(destination / "association.csv")
-    cross_kappa = math.sqrt(0.04509 * 0.0450) * (
-        math.sqrt(2.7927 * GROSS_CO2["segment_diameter"])
-        / (0.5 * (2.7927 + GROSS_CO2["segment_diameter"]))
-    ) ** 3
+    cross_kappa = (
+        math.sqrt(0.04509 * 0.0450)
+        * (
+            math.sqrt(2.7927 * GROSS_CO2["segment_diameter"])
+            / (0.5 * (2.7927 + GROSS_CO2["segment_diameter"]))
+        )
+        ** 3
+    )
     for row in association_rows:
         if (
             row["source_id"] == "pabsch-2020-induced-association"
@@ -331,6 +369,35 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _tree_hashes(root: Path) -> dict[str, str]:
+    return {
+        str(path.relative_to(root)): _sha256(path)
+        for path in sorted(root.rglob("*"))
+        if path.is_file()
+    }
+
+
+def _validated_reaction_contract() -> dict[str, Any]:
+    contract = load_reaction_contract()
+    validate_reaction_contract(contract)
+    return contract
+
+
+def _literature_r4_coefficients() -> tuple[float, float, float, float]:
+    reaction = _validated_reaction_contract()["reactions"][3]
+    if reaction["reaction_id"] != "R4":
+        raise ValueError("canonical fourth reaction is not R4")
+    correlation = reaction["correlation"]
+    if correlation["kind"] != "ln_a_plus_b_over_t":
+        raise ValueError("R4 correlation form drifted")
+    return (
+        float(correlation["a"]),
+        float(correlation["b_k"]),
+        0.0,
+        0.0,
+    )
+
+
 def _distribution_identity(name: str) -> dict[str, str]:
     distribution = metadata.distribution(name)
     record = distribution.read_text("RECORD")
@@ -353,6 +420,24 @@ def _distribution_identity(name: str) -> dict[str, str]:
         raise ValueError(f"installed {name} wheel is unavailable: {wheel_path}")
     identity["wheel_sha256"] = _sha256(wheel_path)
     return identity
+
+
+def _require_candidate_environment() -> dict[str, dict[str, str]]:
+    identities = {}
+    for name, expected in EXPECTED_DISTRIBUTIONS.items():
+        try:
+            identity = _distribution_identity(name)
+        except (metadata.PackageNotFoundError, ValueError) as error:
+            raise RuntimeError(
+                "full R4 reproduction requires the exact external candidate-wheel "
+                f"environment; missing distribution: {name}"
+            ) from error
+        if any(identity[key] != value for key, value in expected.items()):
+            raise RuntimeError(
+                f"installed {name} identity differs from the retained receipt"
+            )
+        identities[name] = identity
+    return identities
 
 
 def _interpolated_carbamate_target(
@@ -394,34 +479,43 @@ def _interpolated_carbamate_target(
 def _fit_rows() -> tuple[FitRow, ...]:
     canonical = {row["observation_id"]: row for row in _rows(VLE)}
     metrology = {row["observation_id"]: row for row in _rows(METROLOGY)}
-    split = {
+    canonical_split = {
         row["record_id"]: row
-        for row in _rows(SPLIT)
+        for row in _rows(CANONICAL_SPLIT)
         if row["target_family"] == "vle_pressure"
     }
+    partition = json.loads(ANALYSIS_PARTITION.read_text(encoding="utf-8"))
+    training_groups = set(partition["training_group_ids"])
     result = []
     for observation_id, row in sorted(canonical.items()):
-        role = metrology[observation_id]
-        if role["target_eligible"] != "yes":
+        metrology_role = metrology[observation_id]
+        if metrology_role["target_eligible"] != "yes":
             continue
-        partition = split.get(row["active_row_id"]) or split[observation_id]
+        source_partition = (
+            canonical_split.get(row["active_row_id"]) or canonical_split[observation_id]
+        )
+        group_id = source_partition["group_id"]
+        role = (
+            "active_training" if group_id in training_groups else "reserved_validation"
+        )
         temperature_k = 273.15 + float(
             row["temperature_canonical_C"] or row["temperature_reported_C"]
         )
         loading = float(row["CO2_loading"])
         mea_mass_fraction = float(row["MEA_weight_fraction"])
-        pressure_pa = float(role["state_pressure_pa"])
+        pressure_pa = float(metrology_role["state_pressure_pa"])
         observed_pco2_pa = 1000.0 * float(row["CO2_pressure"])
         if (
-            role["measurement_origin"]
+            metrology_role["measurement_origin"]
             not in {
                 "calibration_derived_partial_pressure",
                 "total_pressure_derived",
             }
-            or role["pressure_specification"] != "row_reported_total_pressure"
+            or metrology_role["pressure_specification"] != "row_reported_total_pressure"
             or not math.isclose(pressure_pa, 1000.0 * float(row["total_pressure"]))
             or not math.isclose(
-                observed_pco2_pa, 1000.0 * float(role["observed_pco2_kpa"])
+                observed_pco2_pa,
+                1000.0 * float(metrology_role["observed_pco2_kpa"]),
             )
         ):
             raise ValueError(f"pressure-row source contract drift: {observation_id}")
@@ -437,18 +531,18 @@ def _fit_rows() -> tuple[FitRow, ...]:
                 loading=loading,
                 pressure_pa=pressure_pa,
                 observed_pco2_pa=observed_pco2_pa,
-                split=partition["split"],
-                role=partition["role"],
-                group_id=partition["group_id"],
-                measurement_origin=role["measurement_origin"],
-                source_locator=role["source_locator"],
+                split="training" if role == "active_training" else "validation",
+                role=role,
+                group_id=group_id,
+                measurement_origin=metrology_role["measurement_origin"],
+                source_locator=metrology_role["source_locator"],
                 carbamate_target=carbamate,
                 carbamate_lower_row=lower,
                 carbamate_upper_row=upper,
             )
         )
     role_counts = Counter(row.role for row in result)
-    if role_counts != {"active_training": 72, "reserved_validation": 49}:
+    if role_counts != partition["expected_role_counts"]:
         raise ValueError(f"R4 multisource partition drift: {dict(role_counts)}")
     if {row.source_key for row in result if row.role == "active_training"} != {
         "Hilliard2008",
@@ -510,7 +604,7 @@ def _r4_ln_k(
 def _source_ln_k(
     temperature_k: float, r4_coefficients: tuple[float, float, float, float]
 ) -> tuple[float, ...]:
-    contract = load_reaction_contract()
+    contract = _validated_reaction_contract()
     offsets = contract["common_source_standard_state"]["source_to_common_ln_k_offsets"]
     result = []
     for index, (reaction, offset) in enumerate(
@@ -536,10 +630,9 @@ def _reaction_inputs(
     tuple[float, ...],
     tuple[float, ...],
 ]:
-    from MEA.common.mea_source_contracts import load_sentinel_contract
-
-    contract = load_reaction_contract()
+    contract = _validated_reaction_contract()
     sentinel = load_sentinel_contract()
+    validate_sentinel_contract(sentinel, contract)
     component_ids = tuple(contract["provider_species_order"])
     charges = tuple(int(species["charge"]) for species in contract["species"])
     elements = tuple(contract["balance_row_order"])
@@ -583,7 +676,14 @@ def _reaction_consistent_molar_masses(
     balances = np.asarray(balance_matrix, dtype=float)
     values = np.asarray([reported[component] for component in component_ids])
     elemental_masses, *_ = np.linalg.lstsq(balances.T, values, rcond=None)
-    return tuple(float(value) for value in balances.T @ elemental_masses)
+    projected = balances.T @ elemental_masses
+    rounding_residual = float(np.max(np.abs(projected - values)))
+    if rounding_residual > MOLAR_MASS_ROUNDING_TOLERANCE_KG_PER_MOL:
+        raise ValueError(
+            "bundle molar masses exceed the admitted source-rounding tolerance: "
+            f"{rounding_residual:.6e} kg/mol"
+        )
+    return tuple(float(value) for value in projected)
 
 
 def _public_transfer_offsets(
@@ -591,7 +691,7 @@ def _public_transfer_offsets(
 ) -> tuple[tuple[float, ...], dict[str, object]]:
     import epcsaft
 
-    contract = load_reaction_contract()
+    contract = _validated_reaction_contract()
     source_reference = json.loads(SOURCE_REFERENCE.read_text(encoding="utf-8"))[
         "source_reference"
     ]
@@ -613,6 +713,28 @@ def _public_transfer_offsets(
         T=temperature_k * epcsaft.unit_registry.kelvin,
         P=pressure_pa * epcsaft.unit_registry.pascal,
     )
+    temperature_interval = tuple(
+        float(value) for value in transfer.source_temperature_interval_k
+    )
+    pressure_interval = tuple(
+        float(value) for value in transfer.source_pressure_interval_pa
+    )
+    convergence_error = float(transfer.reference_convergence_error)
+    if not temperature_interval[0] <= temperature_k <= temperature_interval[1]:
+        raise ValueError(
+            "source-reference transfer temperature is outside its receipt domain"
+        )
+    if not pressure_interval[0] <= pressure_pa <= pressure_interval[1]:
+        raise ValueError(
+            "source-reference transfer pressure is outside its receipt domain"
+        )
+    if (
+        not math.isfinite(convergence_error)
+        or convergence_error > SOURCE_REFERENCE_CONVERGENCE_TOLERANCE
+    ):
+        raise ValueError(
+            "source-reference transfer did not meet the frozen convergence tolerance"
+        )
     reactions = np.asarray(
         [reaction["stoichiometry"] for reaction in contract["reactions"]], dtype=float
     )
@@ -626,9 +748,9 @@ def _public_transfer_offsets(
         "artifact_fingerprint": transfer.artifact_fingerprint,
         "reference_state_fingerprint": transfer.reference_state_fingerprint,
         "domain_fingerprint": transfer.domain_fingerprint,
-        "temperature_interval_k": list(transfer.source_temperature_interval_k),
-        "pressure_interval_pa": list(transfer.source_pressure_interval_pa),
-        "reference_convergence_error": transfer.reference_convergence_error,
+        "temperature_interval_k": list(temperature_interval),
+        "pressure_interval_pa": list(pressure_interval),
+        "reference_convergence_error": convergence_error,
         "basis_reconstruction_inf_norm": reconstruction,
     }
 
@@ -651,34 +773,26 @@ def _pco2(
     return float(state.fugacity.value[0].to("pascal").magnitude)
 
 
-def _evaluate_state(
-    task: tuple[
-        str,
-        FitRow,
-        tuple[float, float, float, float],
-        tuple[float, ...] | None,
-        bool,
-    ],
-) -> dict[str, object]:
-    bundle_text, row, r4_coefficients, cached_offsets, with_sensitivity = task
+def _evaluate_state(task: EvaluationTask) -> dict[str, object]:
+    row = task.row
     import epcsaft
     import epcsaft_equilibrium
 
-    bundle = Path(bundle_text)
+    bundle = Path(task.bundle)
     component_ids, charges, balances, reactions, feed, totals, masses = (
         _reaction_inputs(bundle, row.loading, row.mea_mass_fraction)
     )
     model = epcsaft.Mixture(
         epcsaft.Parameters.from_bundle(bundle, components=component_ids)
     )
-    if cached_offsets is None:
+    if task.cached_offsets is None:
         offsets, transfer_receipt = _public_transfer_offsets(
             model, row.temperature_k, row.pressure_pa
         )
     else:
-        offsets = cached_offsets
+        offsets = task.cached_offsets
         transfer_receipt = {}
-    source_ln_k = _source_ln_k(row.temperature_k, r4_coefficients)
+    source_ln_k = _source_ln_k(row.temperature_k, task.r4_coefficients)
     provider_ln_k = tuple(
         source + offset for source, offset in zip(source_ln_k, offsets, strict=True)
     )
@@ -711,7 +825,7 @@ def _evaluate_state(
     )
     request = (
         epcsaft_equilibrium.ChemicalEquilibriumSensitivityRequest()
-        if with_sensitivity
+        if task.with_sensitivity
         else None
     )
     solved = epcsaft_equilibrium.chemical_equilibrium(
@@ -731,7 +845,7 @@ def _evaluate_state(
         reaction_id: None for reaction_id in REACTION_IDS
     }
     derivative_consistency = None
-    if with_sensitivity:
+    if task.with_sensitivity:
         sensitivity = solved.sensitivity
         if sensitivity is None or sensitivity.status != "available":
             raise ValueError("exact reaction-state sensitivity is unavailable")
@@ -829,21 +943,16 @@ def _evaluate_state(
     return result
 
 
-def _evaluate_state_safe(
-    task: tuple[
-        str,
-        FitRow,
-        tuple[float, float, float, float],
-        tuple[float, ...] | None,
-        bool,
-    ],
-) -> dict[str, object]:
+def _evaluate_state_safe(task: EvaluationTask) -> dict[str, object]:
+    import epcsaft
+    import epcsaft_equilibrium
+
     try:
         return _evaluate_state(task)
-    except Exception as error:
+    except (epcsaft.EosError, epcsaft_equilibrium.ChemicalEquilibriumError) as error:
         diagnostics = getattr(error, "diagnostics", None)
         return {
-            "observation_id": task[1].observation_id,
+            "observation_id": task.row.observation_id,
             "failure_type": type(error).__name__,
             "failure_reason": str(error),
             "failure_kind": (
@@ -862,22 +971,22 @@ def _evaluate_batch(
     *,
     with_sensitivity: bool,
     workers: int,
-    allow_failures: bool = False,
+    retain_state_failures: bool = False,
 ) -> list[dict[str, object]]:
     tasks = tuple(
-        (
-            str(bundle),
-            row,
-            r4_coefficients,
-            offsets.get(row.observation_id),
-            with_sensitivity,
+        EvaluationTask(
+            bundle=str(bundle),
+            row=row,
+            r4_coefficients=r4_coefficients,
+            cached_offsets=offsets.get(row.observation_id),
+            with_sensitivity=with_sensitivity,
         )
         for row in rows
     )
     with ProcessPoolExecutor(max_workers=workers) as executor:
         results = list(executor.map(_evaluate_state_safe, tasks))
     failures = [result for result in results if "failure_type" in result]
-    if failures and not allow_failures:
+    if failures and not retain_state_failures:
         raise ValueError(
             "R4 state evaluation failures:\n"
             + "\n".join(json.dumps(failure, sort_keys=True) for failure in failures)
@@ -1088,15 +1197,11 @@ def main() -> None:
     if not 1 <= args.workers <= 16:
         raise ValueError("workers must lie between one and sixteen")
 
+    installed_artifacts = _require_candidate_environment()
     rows = _fit_rows()
     role_by_observation_id = {row.observation_id: row.role for row in rows}
     training_rows = tuple(row for row in rows if row.role == "active_training")
-    literature_coefficients = (
-        LITERATURE_A,
-        LITERATURE_B_K,
-        LITERATURE_C,
-        LITERATURE_D_PER_K,
-    )
+    literature_coefficients = _literature_r4_coefficients()
     iterations: list[dict[str, object]] = []
     offsets: dict[str, tuple[float, ...]] = {}
     transfer_receipts: dict[str, dict[str, object]] = {}
@@ -1104,7 +1209,7 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="mea-r4-fit-") as temporary:
         bundle = Path(temporary) / "m5-r4-fit"
         _prepare_fit_bundle(bundle)
-        bundle_manifest_sha256 = _sha256(bundle / "bundle.toml")
+        generated_bundle_files = _tree_hashes(bundle)
         initial_training_evaluations = _evaluate_batch(
             bundle,
             training_rows,
@@ -1112,7 +1217,7 @@ def main() -> None:
             offsets,
             with_sensitivity=True,
             workers=args.workers,
-            allow_failures=True,
+            retain_state_failures=True,
         )
         initial_training_failures = [
             result
@@ -1247,7 +1352,7 @@ def main() -> None:
             offsets,
             with_sensitivity=False,
             workers=args.workers,
-            allow_failures=True,
+            retain_state_failures=True,
         )
         initial_reserved_failures = [
             result for result in initial_reserved_results if "failure_type" in result
@@ -1274,7 +1379,7 @@ def main() -> None:
             offsets,
             with_sensitivity=False,
             workers=args.workers,
-            allow_failures=True,
+            retain_state_failures=True,
         )
         candidate_failures = [
             result for result in candidate_results if "failure_type" in result
@@ -1346,6 +1451,11 @@ def main() -> None:
         ),
         ("M5_fitted_R4", candidate_failures),
     ):
+        evidence_stage = (
+            "literature-R4 all-row evaluation"
+            if model_id == "M5_literature_R4"
+            else "fitted-R4 all-row evaluation"
+        )
         for failure in failures:
             row = row_lookup[str(failure["observation_id"])]
             state_failure_rows.append(
@@ -1359,7 +1469,7 @@ def main() -> None:
                     "state_pressure_pa": row.pressure_pa,
                     "failure_kind": failure["failure_kind"],
                     "failure_reason": failure["failure_reason"],
-                    "evidence_stage": "model-specific all-row evaluation",
+                    "evidence_stage": evidence_stage,
                 }
             )
 
@@ -1426,7 +1536,7 @@ def main() -> None:
         {
             "parameter": "A",
             "unit": "dimensionless",
-            "literature_value": LITERATURE_A,
+            "literature_value": literature_coefficients[0],
             "fitted_value": best_coefficients[0],
             "lower_bound": "",
             "upper_bound": "",
@@ -1434,7 +1544,7 @@ def main() -> None:
         {
             "parameter": "B",
             "unit": "K",
-            "literature_value": LITERATURE_B_K,
+            "literature_value": literature_coefficients[1],
             "fitted_value": best_coefficients[1],
             "lower_bound": "",
             "upper_bound": "",
@@ -1442,7 +1552,7 @@ def main() -> None:
         {
             "parameter": "C",
             "unit": "dimensionless",
-            "literature_value": LITERATURE_C,
+            "literature_value": literature_coefficients[2],
             "fitted_value": best_coefficients[2],
             "lower_bound": "",
             "upper_bound": "",
@@ -1450,7 +1560,7 @@ def main() -> None:
         {
             "parameter": "D",
             "unit": "1/K",
-            "literature_value": LITERATURE_D_PER_K,
+            "literature_value": literature_coefficients[3],
             "fitted_value": best_coefficients[3],
             "lower_bound": "",
             "upper_bound": "",
@@ -1466,11 +1576,14 @@ def main() -> None:
             "upper_bound": R4_LN_K_BOUNDS[1],
         },
     ]
-    _write_csv(RESULTS / "r4_correlation_fit_rows.csv", fit_rows)
+    _write_csv(FIGURE_OUTPUT / "r4_correlation_fit_rows.csv", fit_rows)
     _write_csv(RESULTS / "r4_correlation_fit_parameters.csv", parameter_rows)
     _write_csv(RESULTS / "r4_correlation_fit_metrics.csv", _metric_rows(fit_rows))
-    _write_csv(RESULTS / "r4_reaction_sensitivity_rows.csv", reaction_sensitivity_rows)
-    _write_csv(RESULTS / "r4_eos_sensitivity_rows.csv", eos_sensitivity_rows)
+    _write_csv(
+        FIGURE_OUTPUT / "r4_reaction_sensitivity_rows.csv",
+        reaction_sensitivity_rows,
+    )
+    _write_csv(FIGURE_OUTPUT / "r4_eos_sensitivity_rows.csv", eos_sensitivity_rows)
     _write_csv(RESULTS / "r4_state_failures.csv", state_failure_rows)
 
     transfer_values = tuple(transfer_receipts.values())
@@ -1488,8 +1601,9 @@ def main() -> None:
             "failure_records": len(state_failure_rows),
         },
         "training_groups": dict(sorted(group_counts.items())),
-        "split_sha256": _sha256(SPLIT),
-        "split_change": "All admitted active Jou source/temperature groups are training; Xu and Hilliard reserved groups remain validation.",
+        "canonical_split_sha256": _sha256(CANONICAL_SPLIT),
+        "analysis_partition_sha256": _sha256(ANALYSIS_PARTITION),
+        "partition_role": "Analysis-local override for this nonpromoting experiment; the canonical 147/220 split is unchanged.",
         "carbamate_role": "source-interpolated comparison only; excluded from the objective",
         "source_domain_limit": (
             "The selected R4 and R5 literature correlations end at 323.15 K. "
@@ -1545,18 +1659,29 @@ def main() -> None:
             )
         ),
         "promotion_allowed": False,
-        "bundle_manifest_sha256": bundle_manifest_sha256,
+        "generated_bundle_files": generated_bundle_files,
+        "base_bundle_files": _tree_hashes(BASE_BUNDLE),
         "source_files": {
             str(path.relative_to(REPO_ROOT)): _sha256(path)
-            for path in (VLE, SPECIATION, METROLOGY, SPLIT, SOURCE_REFERENCE)
+            for path in (
+                VLE,
+                SPECIATION,
+                METROLOGY,
+                CANONICAL_SPLIT,
+                REACTION_CONTRACT,
+                SENTINEL_CONTRACT,
+                SOURCE_REFERENCE,
+                ANALYSIS_PARTITION,
+            )
         },
         "installed_artifacts": {
-            "provider": _distribution_identity("epcsaft"),
-            "equilibrium": _distribution_identity("epcsaft-equilibrium"),
+            "provider": installed_artifacts["epcsaft"],
+            "equilibrium": installed_artifacts["epcsaft-equilibrium"],
         },
         "eos_sensitivity": eos_sensitivity_receipt,
         "source_reference_transfer": {
             "evaluated_state_count": len(transfer_values),
+            "convergence_tolerance": SOURCE_REFERENCE_CONVERGENCE_TOLERANCE,
             "artifact_fingerprints": sorted(
                 {str(item["artifact_fingerprint"]) for item in transfer_values}
             ),
@@ -1567,8 +1692,7 @@ def main() -> None:
                 {str(item["domain_fingerprint"]) for item in transfer_values}
             ),
             "maximum_reference_convergence_error": max(
-                float(item["reference_convergence_error"])
-                for item in transfer_values
+                float(item["reference_convergence_error"]) for item in transfer_values
             ),
         },
     }

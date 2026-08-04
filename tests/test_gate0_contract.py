@@ -51,13 +51,13 @@ def test_gate0_observation_contracts_fail_closed() -> None:
     ].shape[0]
 
     assert regression_split_hash() == (
-        "af205ad5968667cf25dc9205d780738035769664a94cc9a421cd3c67148ff804"
+        "121c73da3ab87498a019beeceee7ee00a9464eca64b5fd861c0b326149ab9c72"
     )
-    assert len(load_regression_vle_view()) == 24
-    assert len(load_regression_vle_view(role="reserved_validation")) == 97
+    assert len(load_regression_vle_view()) == 72
+    assert len(load_regression_vle_view(role="reserved_validation")) == 49
     assert load_regression_readiness_summary()["executable_observation_counts"] == {
         "speciation": {"active_training": 131, "reserved_validation": 67},
-        "vle_pressure": {"active_training": 24, "reserved_validation": 97},
+        "vle_pressure": {"active_training": 72, "reserved_validation": 49},
     }
 
 

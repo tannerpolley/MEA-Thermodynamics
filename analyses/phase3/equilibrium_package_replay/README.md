@@ -46,17 +46,33 @@ capability probe before committing to the expensive multi-start campaign.
 
 ## Current result
 
-The retained audit uses EOS commit
-`02104702e822e1f062bf829f0fe2280e801bbbc4` and Equilibrium candidate commit
-`6604555a4b0c4efb733281bfa00c7f5efdefd772`. The Equilibrium commit is local and
-is not contained in an `origin/*` branch. Its continuation and certification
-interfaces do not add a caller-declared source-solvent reference. The installed
-EOS callback also exposes its fixed computational reference without a general
-public source-reference transfer operation.
+The retained installed-only audit uses EOS commit
+`0fbe76038b5cab22b116f074359447a66ce9da9d` and Equilibrium commit
+`e6fd5df6f3d3d156ad09488f3eecc6529cff83a3`; both commits are present on their
+respective origins. The exact wheels have SHA-256 values
+`1622162b929cb8cd1a10d7c582a6b913babb8580a9f2188ee4fdf324d92f2772` and
+`397f0745fc692d33ea3a2d855a33346c516038bfd221798bc05f8ca02fde9b77`.
+The installed public EOS performs the declared pure-water source-reference
+transfer at the trial temperature and pressure, and the retained result carries
+its immutable transfer receipt.
 
-Both M0 and M5 therefore report
-`BLOCKED_UNSUPPORTED_SOURCE_REFERENCE_TRANSFER`. The solver is not called, so
-there are no reaction affinities, pressure or KKT residuals, reduced-Hessian
-inertia, minimum amount, packing fraction, or start accounting to report. The
-previous M0 certificate and M5 diagnostic composition remain diagnostic
-evidence only; neither is a corrected source-bound M5 result.
+M0 and M5 both report `LOCAL_EQUILIBRIUM`; numerical, physical, first-order,
+and second-order checks pass. For M5, the reaction-affinity norm is
+\(2.15\times10^{-14}\), the relative pressure residual is
+\(5.34\times10^{-11}\), the KKT residual is \(2.84\times10^{-13}\), and the
+certified reduced-Hessian inertia is (6, 0, 0). Its packing fraction is 0.4771
+and its minimum species amount is \(2.73\times10^{-10}\) mol. The canonical
+M5 mole fractions are
+
+```text
+[2.276679e-5, 1.943569e-2, 8.755756e-1, 5.269521e-2,
+ 4.008662e-2, 1.175949e-2, 4.244862e-4, 3.066710e-11,
+ 1.275447e-7]
+```
+
+The search generated 23 starts for each model and evaluated 18 after five
+Provider-domain rejections. It found 16 certified M0 starts and 12 certified
+M5 starts; two M0 and six M5 evaluated starts did not certify. These results
+establish homogeneous fixed-T,P local equilibria only. They do not establish
+global equilibrium, vapor-liquid equilibrium, parameter validity, regression
+readiness, or predictive accuracy.

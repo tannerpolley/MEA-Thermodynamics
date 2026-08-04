@@ -34,6 +34,7 @@
     "mole_fractions": [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
     "solvent_species": ["H2O"],
     "nonwater_solute_standard": "infinite-dilution-in-declared-solvent",
+    "activity_convention_id": "molality-infinite-dilution-v1",
     "solute_standard_molality_mol_per_kg": 1.0,
     "ionic_reference_contraction": "charge-neutral",
     "source_reference_pressure_pa": 100000.0

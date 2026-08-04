@@ -39,7 +39,7 @@ Executable: true
 
 - Grouped split: `data/reference/MEA/manifests/grouped_split_manifest.csv`
 - Readiness receipt: `analyses/phase3/ionic_epcsaft_regression/results/readiness/regression_readiness_summary.json`
-- Split hash: `e7bc893dab825007d009260d2c1f6f5dd42e75ebddbdb4972d52a5ec4f0c1aa0`
+- Split hash: `121c73da3ab87498a019beeceee7ee00a9464eca64b5fd861c0b326149ab9c72`
 
 The frozen manifest contains complete source/composition/temperature groups, including 15/20 wt% speciation transfer groups and non-30-wt% VLE groups. Its failed-row policy counts every attempted reserved row as a validation outcome; omission is forbidden. Candidate-bound validation still waits for Issue #13.
 
@@ -47,7 +47,7 @@ The immutable candidate must be produced through the clean, admitted `ePC-SAFT/e
 
 ## Submission Sprint Role
 
-This is the Tuesday, July 21 scientific freeze gate. It consumes the exact promoted #13 candidate, evaluates all 220 reserved observations with failures retained, and issues the only validation/identifiability receipt that #16 and #18 may use.
+This scientific freeze gate consumes the exact promoted #13 candidate, evaluates all 172 reserved states with failures retained, and issues the only validation/identifiability receipt that #16 and #18 may use.
 
 ## Non-goals
 

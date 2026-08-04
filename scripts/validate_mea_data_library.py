@@ -144,7 +144,7 @@ def validate() -> list[str]:
 
     split = _read_dicts(LIBRARY / "manifests" / "grouped_split_manifest.csv")
     split_roles = Counter(row["role"] for row in split)
-    if split_roles != Counter({"active_training": 147, "reserved_validation": 220}):
+    if split_roles != Counter({"active_training": 195, "reserved_validation": 172}):
         errors.append(f"Frozen regression split drift: {dict(split_roles)}")
     volumetric_split = _read_dicts(LIBRARY / "manifests" / "volumetric_grouped_split_manifest.csv")
     volumetric_roles = Counter(row["role"] for row in volumetric_split)

@@ -7,6 +7,7 @@ import json
 import math
 import subprocess
 import sys
+import tempfile
 import time
 import zipfile
 from dataclasses import asdict
@@ -270,6 +271,7 @@ def _problem(
     equilibrium: Any,
     bundle: Path,
     contract: dict[str, Any],
+    transfer_contract: dict[str, Any],
     row: dict[str, str],
 ) -> Any:
     import numpy as np
@@ -338,6 +340,18 @@ def _problem(
             common["log_activity_scale_factors_by_species"]
         ),
         reference_pressure_pa=reference_pressure,
+        source_reference_component_ids=component_ids,
+        source_reference_solvent_composition=tuple(
+            transfer_contract["source_reference"]["mole_fractions"]
+        ),
+        source_reference_activity_convention_id=transfer_contract[
+            "source_reference"
+        ]["activity_convention_id"],
+        source_reference_standard_molality_mol_per_kg=float(
+            transfer_contract["source_reference"][
+                "solute_standard_molality_mol_per_kg"
+            ]
+        ),
     )
     return equilibrium.ChemicalEquilibriumProblem(
         species_ids=component_ids,
@@ -389,7 +403,7 @@ def _diagnostic_receipt(diagnostics: Any) -> dict[str, Any]:
     ):
         receipt.pop(field)
     receipt["search"]["basin_count"] = len(diagnostics.search.basins)
-    for field in ("attempts", "basins", "budget_prefixes"):
+    for field in ("basins", "budget_prefixes"):
         receipt["search"].pop(field)
     return receipt
 
@@ -400,6 +414,7 @@ def _evaluate_model(
     model_id: str,
     row: dict[str, str],
     contract: dict[str, Any],
+    transfer_contract: dict[str, Any],
     work: Path,
 ) -> dict[str, Any]:
     if str(COMPARISON_SCRIPTS) not in sys.path:
@@ -434,7 +449,7 @@ def _evaluate_model(
         "first_failed_physical_criterion": "",
         "elapsed_s": 0.0,
     }
-    problem = _problem(equilibrium, bundle, contract, row)
+    problem = _problem(equilibrium, bundle, contract, transfer_contract, row)
     phase = equilibrium.ProviderPhase(
         model=model,
         expected_parameter_fingerprint=model.parameter_fingerprint,
@@ -460,6 +475,10 @@ def _evaluate_model(
             raise ValueError("Provider returned no fugacity for a certified state")
         pressure = float(state.fugacity.value[0].to("pascal").magnitude)
         diagnostics = solved.diagnostics
+        if solved.source_reference_transfer is None:
+            raise ValueError(
+                "certified source-bound result omitted its Provider transfer receipt"
+            )
         result.update(
             status="CERTIFIED_LOCAL_EQUILIBRIUM",
             equilibrium_predicted_pco2_pa=pressure,
@@ -481,6 +500,7 @@ def _evaluate_model(
             chemical_diagnostics=_diagnostic_receipt(diagnostics),
             equilibrium_mole_fractions=list(solved.mole_fractions),
             ln_k_provider_basis=list(solved.ln_k_provider_basis or ()),
+            source_reference_transfer=asdict(solved.source_reference_transfer),
             equilibrium_artifact_identity=asdict(solved.artifact_identity),
         )
     except equilibrium.ChemicalEquilibriumError as error:
@@ -613,26 +633,42 @@ def main() -> None:
     )
     legacy = _legacy_rows()
     RESULTS.mkdir(parents=True, exist_ok=True)
-    if capability["status"] == "SUPPORTED":
-        raise RuntimeError(
-            "a public source-reference transfer is now advertised; explicitly wire "
-            "and review that API before enabling chemistry"
-        )
     blocked_status = str(transfer_contract["failure_status"])
-    rows = [
-        _blocked_source_reference_row(
-            model_id,
-            legacy[model_id],
-            capability,
-            blocked_status,
-        )
-        for model_id in args.models
-    ]
-    for row in rows:
-        print(
-            f"{row['model_id']}: {row['status']} (solver not called)",
-            flush=True,
-        )
+    if capability["status"] == "SUPPORTED":
+        rows = []
+        with tempfile.TemporaryDirectory(prefix="mea-equilibrium-replay-") as directory:
+            work = Path(directory)
+            for model_id in args.models:
+                row = _evaluate_model(
+                    epcsaft,
+                    epcsaft_equilibrium,
+                    model_id,
+                    legacy[model_id],
+                    contract,
+                    transfer_contract,
+                    work,
+                )
+                rows.append(row)
+                print(
+                    f"{row['model_id']}: {row['status']} "
+                    f"({row['elapsed_s']:.3f} s)",
+                    flush=True,
+                )
+    else:
+        rows = [
+            _blocked_source_reference_row(
+                model_id,
+                legacy[model_id],
+                capability,
+                blocked_status,
+            )
+            for model_id in args.models
+        ]
+        for row in rows:
+            print(
+                f"{row['model_id']}: {row['status']} (solver not called)",
+                flush=True,
+            )
 
     statuses = {str(row["status"]) for row in rows}
     if statuses == {blocked_status}:
@@ -670,9 +706,9 @@ def main() -> None:
         "claim_boundary": (
             "No corrected M5 state is reported unless an installed public API "
             "performs the exact declared-source-to-Provider reference transfer. "
-            "A future successful row would establish one certified local fixed-T,P "
-            "homogeneous state only, not global equilibrium, parameter validity, "
-            "or regression readiness."
+            "A successful row establishes one certified local fixed-T,P homogeneous "
+            "state only, not global equilibrium, parameter validity, or regression "
+            "readiness."
         ),
     }
     status_path = RESULTS / "equilibrium_replay_status.json"

@@ -27,6 +27,14 @@ outputs:
   - results/m0_m5_model_definitions.csv
   - results/m0_m5_pressure_predictions.csv
   - results/m0_m5_pressure_metrics.csv
+  - results/r4_correlation_fit_rows.csv
+  - results/r4_correlation_fit_iterations.csv
+  - results/r4_correlation_fit_parameters.csv
+  - results/r4_correlation_fit_metrics.csv
+  - results/r4_correlation_fit_receipt.json
+  - results/r4_reaction_sensitivity_rows.csv
+  - results/r4_eos_sensitivity_rows.csv
+  - results/r4_state_failures.csv
   - figures/m0_m3_pco2_loading_comparison.svg
   - figures/m0_m3_species_by_loading.svg
   - figures/m0_m3_density_context.svg
@@ -36,4 +44,8 @@ outputs:
   - figures/m0_m5_pco2_30wt.svg
   - figures/m0_m5_residuals_30wt.svg
   - figures/m0_m5_metric_scatter.svg
-claim_boundary: The results are diagnostic model comparisons. M3 is a two-row fit, M4A is a single-source pressure fit, M4B is a joint-source pressure fit, M5Q uses a QQ-consistent CO2 set, and M5 activates full neutral DD/QQ/DQ without refitting H2O or MEA; none permits parameter promotion or a predictive claim.
+  - figures/r4_correlation_fit_pco2.svg
+  - figures/r4_correlation_fit_carbamate.svg
+  - figures/r4_correlation_fit_residual_structure.svg
+  - figures/r4_correlation_fit_sensitivity.svg
+claim_boundary: The results are diagnostic model comparisons. M3 is a two-row fit, M4A is a single-source pressure fit, M4B is a joint-source pressure fit, M5Q uses a QQ-consistent CO2 set, and M5 activates full neutral DD/QQ/DQ without refitting H2O or MEA. The multisource R4 screen is ill-conditioned and cannot separate R2/R4/R5 chemistry from selected ionic EOS coordinates. None permits parameter promotion or a predictive claim.

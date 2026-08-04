@@ -152,3 +152,67 @@ M5Q and M5 are diagnostic comparisons only. M5Q changes both the CO2 pure set
 and the QQ equation as required for component consistency. M5 does not supply
 the missing dipolar-associating refits. Neither result permits parameter
 promotion or a manuscript claim.
+
+## R4 temperature-correlation screen
+
+The application-owned R4 screen fits
+`ln K4 = A + B/T + C ln(T) + D T` to the admitted Hilliard 40 C and Jou
+40--120 C pressure campaigns. Jou is no longer reserved solely for validation:
+the grouped split now contains 72 pressure-training rows and 49 reserved rows.
+The objective gives each source/temperature group equal total weight and equal
+weight to rows within a group. Loading remains a state input, not a target.
+
+Every modeled state uses the installed public pure-water source-reference
+transfer and the fixed-T,P homogeneous chemical-equilibrium solver. The
+Gauss--Newton step uses exact implicit state sensitivities to the Provider-basis
+R4 constant. Four training rows that did not certify in the final-wheel
+preflight remain explicit failed predictions and do not enter the fit. They are
+listed in `results/r4_state_failures.csv`; no replacement value or relaxed
+criterion is used.
+
+The four-coefficient form is evaluated because the five Jou temperatures add
+temperature leverage unavailable to the earlier three-row screen. Its scaled
+Jacobian rank and condition number are retained with the fitted coefficients.
+A numerically improved pressure curve does not make A, B, C, and D separately
+identifiable when that matrix remains ill-conditioned.
+
+The single exact-sensitivity update reduces the group-normalized training
+log10-pressure RMSE from 1.6584 to 1.3953 and the unweighted reserved RMSE from
+2.1777 to 1.5336. The resulting coefficients are
+\(A=32032.62\), \(B=-987556.14\,\mathrm{K}\), \(C=-5435.37\), and
+\(D=7.49855\,\mathrm{K}^{-1}\). They are not a defensible replacement
+correlation: the scaled Jacobian condition number is \(3.43\times10^5\)
+(\(1.26\times10^9\) in the raw basis), and the four large coefficients cancel
+to produce the fitted values over only five temperatures. No coefficient is
+promoted.
+
+The residual evidence also rejects an R4-only explanation. After the update,
+the pressure residual has a Pearson correlation of 0.67 with loading and a
+slope of 3.77 log10 units per mol CO2/mol MEA. Median absolute pressure
+sensitivities to R2, R4, and R5 are 0.382, 0.434, and 0.434 log10 units per
+unit change in ln K, respectively; R4 and R5 are therefore effectively
+indistinguishable to this pressure observable. On the declared affine scales,
+the median pressure responses to MEAH+ dispersion energy, MEAH+ diameter, and
+MEACOO- diameter are 5.97, 1.27, and 0.58 log10 units. The source-specific
+fitted RMSE values remain 1.84 for Hilliard, 1.25 for Jou, and 0.72 for Xu.
+Pressure data alone cannot separate the R4 temperature correlation from R2/R5
+chemistry and the selected ionic EOS parameters.
+
+Böttinger carbamate values are interpolated only where temperature,
+composition, and loading support that comparison. They never enter the
+pressure objective. The retained figures show pressure parity, residuals
+against temperature, loading, pressure, and composition, carbamate behavior,
+and reaction-versus-EOS sensitivity. All results remain diagnostic because the
+R4 and R5 source correlations are extrapolated above 323.15 K, the M5 neutral
+parameters were not refitted with the polar terms active, and several states
+remain outside a certified Provider/Equilibrium path.
+
+Run in an environment containing the exact candidate EOS and Equilibrium
+wheels:
+
+```bash
+PYTHONPATH=src:analyses/phase3/m0_m3_model_comparison/scripts \
+  python analyses/phase3/m0_m3_model_comparison/scripts/run_r4_correlation_fit.py
+PYTHONPATH=src \
+  python analyses/phase3/m0_m3_model_comparison/scripts/render_r4_correlation_fit.py
+```

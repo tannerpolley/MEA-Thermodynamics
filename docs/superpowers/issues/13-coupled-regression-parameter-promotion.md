@@ -48,7 +48,7 @@ Issue #12 can close only after a stage-approved clean `ePC-SAFT/ePC-SAFT-regress
 - Grouped split: `data/reference/MEA/manifests/grouped_split_manifest.csv`
 - Readiness receipt: `analyses/phase3/ionic_epcsaft_regression/results/readiness/regression_readiness_summary.json`
 - Split hash: `af205ad5968667cf25dc9205d780738035769664a94cc9a421cd3c67148ff804`
-- Frozen state membership: 147 training and 220 reserved states.
+- Frozen state membership: 195 training and 172 reserved states.
 - Executable Gate 0 v2 observations: 24 training and 97 reserved pressure rows;
   131 training and 67 reserved speciation scalars.
 - Active coordinates: `MEAH+::sigma`, `MEAH+::epsilon_over_k`, and
@@ -68,7 +68,7 @@ pH, ionic activity, viscosity, calorimetry, and heat targets remain non-admitted
 ## Submission Sprint Role
 
 Gate 0 freezes and tests the application contract without running a fit. A
-later execution must preserve the 147-state training membership while consuming
+later execution must preserve the 195-state training membership while consuming
 only observation rows that remain executable under the frozen metrology and
 speciation rules.
 

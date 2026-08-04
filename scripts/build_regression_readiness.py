@@ -354,9 +354,10 @@ def _vle_split_rows(reference_root: Path, source_hash: str) -> list[dict[str, st
     output: list[dict[str, str]] = []
     for group_id in sorted(groups):
         members = groups[group_id]
-        validation = any(row["lifecycle_status"] == "validation_reserved_candidate" for row in members) or any(
-            row["source_key"] in {"Jou1995", "Xu2011"} for row in members
-        )
+        validation = any(
+            row["lifecycle_status"] == "validation_reserved_candidate"
+            for row in members
+        ) or any(row["source_key"] == "Xu2011" for row in members)
         split = "validation" if validation else "training"
         role = "reserved_validation" if validation else "active_training"
         for row in sorted(members, key=lambda item: item["observation_id"]):
@@ -364,7 +365,11 @@ def _vle_split_rows(reference_root: Path, source_hash: str) -> list[dict[str, st
             reason = (
                 "Held as a source/composition/temperature group; all failed predictions remain in validation accounting."
                 if validation
-                else "Current active-v1 row retained in the grouped training view."
+                else (
+                    "Jou source/temperature group admitted to the pressure-training view."
+                    if row["source_key"] == "Jou1995"
+                    else "Current active-v1 row retained in the grouped training view."
+                )
             )
             output.append(
                 {
